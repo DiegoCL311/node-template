@@ -15,4 +15,14 @@ async function startServer() {
   });
 }
 
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err.message);
+  console.error(err.stack?.split("\n")[1]);
+});
+
+process.on("unhandledRejection", (err: Error) => {
+  console.error("Unhandled Rejection:", err.message);
+  console.error(err.stack?.split("\n")[1]);
+});
+
 startServer();

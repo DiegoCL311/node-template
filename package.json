@@ -2,16 +2,24 @@
   "name": "node-skelleton",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon  --exec ts-node --ext ts,json -r dotenv/config src/app.ts",
+    "start": "npx ts-node -r dotenv/config src/app.ts",
+    "production": "npm run clean && npm run build && npm run start-server",
+    "clean": "rimraf dist",
+    "build": "tsc",
+    "start-server": "echo 'Starting server...' && node -r dotenv/config dist/app.js",
+    "debug": "node --inspect-brk -r dotenv/config src/app.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/mssql": "^9.1.5",
+    "tsx": "^4.7.2",
     "typescript": "^5.4.5"
   },
   "dependencies": {
@@ -24,7 +32,9 @@
     "mongoose": "^8.3.2",
     "mssql": "^10.0.2",
     "mysql2": "^3.9.6",
+    "nodemon": "^3.1.0",
     "postgres": "^3.4.4",
+    "ts-node": "^10.9.2",
     "winston": "^3.13.0"
   }
 }

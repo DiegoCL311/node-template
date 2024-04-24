@@ -8,10 +8,10 @@ import { Express } from "express";
 
 const init = async ({ expressApp }: { expressApp: Express }) => {
   await expressLoader({ app: expressApp });
-  await mssqlLoader();
   await mongooseLoader();
-  await mysqlLoader();
+  //await mysqlLoader();
   await postgresLoader();
+  //await mssqlLoader();
   await loggerLoader();
 };
 

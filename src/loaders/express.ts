@@ -3,6 +3,8 @@ import { Express } from "express";
 import routes from "../api/routes/index";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { errorMiddleware } from "../api/middlewares/errorMiddleware";
+import { requestLogger } from "../api/middlewares/requestLoggerMiddleware";
 
 const expressLoader = async ({ app }: { app: Express }) => {
   app.use(express.json());
@@ -15,8 +17,10 @@ const expressLoader = async ({ app }: { app: Express }) => {
     })
   );
   app.use(cookieParser());
+  app.use(requestLogger);
 
   app.use("/api", routes);
+  app.use(errorMiddleware);
 };
 
 export default expressLoader;

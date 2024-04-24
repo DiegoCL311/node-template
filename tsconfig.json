@@ -1,11 +1,23 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "commonjs",
     "esModuleInterop": true,
-    "target": "es6",
+    "target": "esnext",
+    "allowJs": false,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "strict": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": false,
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "sourceMap": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*", "src/types/*"]
+    }
   },
-  "lib": ["es2015"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

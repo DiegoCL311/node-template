@@ -5,7 +5,12 @@ import config from "../config";
 let mssqlConnection: mssql.ConnectionPool;
 
 const mssqlLoader = async () => {
-  const pool = new ConnectionPool(config.database.mssql);
+  const pool = new ConnectionPool({
+    server: config.database.mssql.server,
+    user: config.database.mssql.user,
+    password: config.database.mssql.password,
+    database: config.database.mssql.database,
+  });
   await pool.connect();
   mssqlConnection = pool;
 
