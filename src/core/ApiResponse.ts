@@ -14,9 +14,10 @@ export abstract class ApiResponse {
   constructor(
     protected response: Response,
     protected status: ResponseStatus,
-    protected message: string
+    protected message: string,
+    protected data?: any
   ) {
-    this.response.status(status).json({ message });
+    this.response.status(status).json({ message, data });
   }
 
   public getStatus(): number {
@@ -67,9 +68,8 @@ export class FailureMsgResponse extends ApiResponse {
 }
 
 export class SuccessResponse<T> extends ApiResponse {
-  constructor(response: Response, message: string, private data: T) {
-    super(response, ResponseStatus.SUCCESS, message);
-    this.response.json({ message, data });
+  constructor(response: Response, message: string, data: T) {
+    super(response, ResponseStatus.SUCCESS, message, data);
   }
 }
 
@@ -80,11 +80,8 @@ export class NoContentResponse<T> extends ApiResponse {
 }
 
 export class AccessTokenErrorResponse extends ApiResponse {
-  private instruction = "refresh_token";
-
   constructor(response: Response, message = "Access token invalid") {
     super(response, ResponseStatus.UNAUTHORIZED, message);
-    response.append("instruction", this.instruction);
   }
 }
 

@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from "express";
 
 import { NoDataError } from "../../core/ApiError";
-import { SuccessMsgResponse } from "../../core/ApiResponse";
+import { SuccessMsgResponse, SuccessResponse } from "../../core/ApiResponse";
 
 const app = express();
 
@@ -12,7 +12,7 @@ app.get("/error", (req: Request, res: Response) => {
 });
 
 app.get("/", (req: Request, res: Response) => {
-  new SuccessMsgResponse(res, "Hello World");
+  new SuccessResponse(res, "Hello World", {});
 });
 
 export default app;
