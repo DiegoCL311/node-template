@@ -9,9 +9,26 @@ const loggerLoader = async () => {
     defaultMeta: { service: "user" },
     transports: [
       new winston.transports.File({ filename: "error.log", level: "error" }),
-      new winston.transports.File({ filename: "combined.log" }),
     ],
   });
 };
+
+process.on("uncaughtException", (err) => {
+  logger.error(
+    "Uncaught Exception " + err.message + " at " + err.stack?.split("\n")[0]
+  );
+
+  console.error("Uncaught Exception:", err.message);
+  console.error(err.stack?.split("\n")[1]);
+});
+
+process.on("unhandledRejection", (err: Error) => {
+  logger.error(
+    "Uncaught Exception " + err.message + " at " + err.stack?.split("\n")[0]
+  );
+
+  console.error("Unhandled Rejection:", err.message);
+  console.error(err.stack?.split("\n")[1]);
+});
 
 export { loggerLoader, logger };

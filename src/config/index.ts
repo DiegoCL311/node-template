@@ -9,10 +9,11 @@ export default {
       uri: process.env.MONGO_URI || "mongodb://localhost:27017/test",
     },
     mssql: {
-      user: process.env.MSSQL || "",
+      user: process.env.MSSQL_USER || "",
       password: process.env.MSSQL_PASSWORD || "",
       server: process.env.MSSQL_SERVER || "",
       database: process.env.MSSQL_DATABASE || "",
+      port: process.env.MSSQL_PORT || "",
     },
     mysql: {
       host: process.env.MYSQL_HOST || "",

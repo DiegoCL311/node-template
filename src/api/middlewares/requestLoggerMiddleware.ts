@@ -18,20 +18,19 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
     const { statusCode } = res;
     let statusColor: string;
 
-    // Choose color based on status code
     switch (Math.floor(statusCode / 100)) {
       case 2:
-        statusColor = "\x1b[32m"; // Green for 2xx codes
+        statusColor = "\x1b[32m";
         break;
       case 3:
-        statusColor = "\x1b[34m"; // Blue for 3xx codes
+        statusColor = "\x1b[34m";
         break;
       case 4:
       case 5:
-        statusColor = "\x1b[31m"; // Red for 4xx and 5xx codes
+        statusColor = "\x1b[31m";
         break;
       default:
-        statusColor = "\x1b[0m"; // Default color
+        statusColor = "\x1b[0m";
     }
 
     console.log(

@@ -4,15 +4,17 @@ import { mongooseLoader } from "./mongoose";
 import { mysqlLoader } from "./mysql";
 import { postgresLoader } from "./postgres";
 import { loggerLoader } from "./logger";
+import { sequelizeLoader } from "./sequelize";
 import { Express } from "express";
 
 const init = async ({ expressApp }: { expressApp: Express }) => {
+  await loggerLoader();
   await expressLoader({ app: expressApp });
   await mongooseLoader();
-  //await mysqlLoader();
   await postgresLoader();
-  //await mssqlLoader();
-  await loggerLoader();
+  await mysqlLoader();
+  await mssqlLoader();
+  await sequelizeLoader();
 };
 
 export default { init };

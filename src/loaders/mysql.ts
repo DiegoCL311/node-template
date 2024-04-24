@@ -16,6 +16,8 @@ const mysqlLoader = async () => {
   });
 
   mysqlConnection = await pool.getConnection();
+
+  console.log("MySQL connected");
 };
 
 export { mysqlLoader, mysqlConnection };

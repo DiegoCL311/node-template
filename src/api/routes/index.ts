@@ -12,7 +12,12 @@ app.get("/error", (req: Request, res: Response) => {
 });
 
 app.get("/", (req: Request, res: Response) => {
-  new SuccessResponse(res, "Hello World", {});
+  new SuccessResponse(res, "", {
+    municipios: [],
+    ciudades: [],
+    departamentos: [],
+    paises: [],
+  });
 });
 
 export default app;

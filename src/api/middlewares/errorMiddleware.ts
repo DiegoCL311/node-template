@@ -8,7 +8,5 @@ export function errorMiddleware(
   res: Response,
   next: NextFunction
 ) {
-  logger.error(error.message);
-
   error instanceof ApiError ? error.send(res) : new InternalError().send(res);
 }
