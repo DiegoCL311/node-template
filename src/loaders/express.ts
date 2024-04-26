@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { errorMiddleware } from "../middlewares/errorMiddleware";
 import { requestLogger } from "../middlewares/requestLoggerMiddleware";
+import helmet from "helmet";
 
 const expressLoader = async ({ app }: { app: Express }) => {
   app.use(express.json());
@@ -18,6 +19,7 @@ const expressLoader = async ({ app }: { app: Express }) => {
   );
   app.use(cookieParser());
   app.use(requestLogger);
+  app.use(helmet());
 
   app.use("/api", routes);
   app.use(errorMiddleware);

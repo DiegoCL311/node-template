@@ -31,4 +31,11 @@ export default {
       uri: process.env.POSTGRES_URI || "",
     },
   },
+  jwt: {
+    public: process.env.JWT_PUBLIC_KEY || "",
+    private: process.env.JWT_PRIVATE_KEY || "",
+    expiryTime: process.env.JWT_EXPIRY_TIME || 3600,
+    issuer: process.env.JWT_ISSUER || "issuer",
+    audience: process.env.JWT_AUDIENCE || "audience",
+  },
 };

@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 import config from "../config/index";
-import { convertToObject } from "typescript";
+import User, { loadModel as loadUserModel } from "../models/user";
 
 let sequelize: Sequelize;
 
@@ -18,6 +18,8 @@ const sequelizeLoader = async () => {
   await sequelize.authenticate();
 
   console.log("Sequelize connected.");
+
+  loadUserModel(sequelize);
 
   return sequelize;
 };

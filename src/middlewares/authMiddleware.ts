@@ -1,27 +1,26 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { IUser } from "../models/user/IUser";
-import { AuthFailureError } from "../core/ApiError";
+import { IUsuario } from "../models/user";
+import { AuthFailureError, BadRequestError } from "../core/ApiError";
+import { getAccessToken, validateTokenData } from '../utils/utils'
+import JWT from '../core/jwt';
+import Usuario from "../models/user";
 
-const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  // Get the JWT token from the request headers
-  const token = req.headers.authorization?.split(" ")[1];
+const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
-  if (!token) {
-    throw new AuthFailureError(
-      "No hay token de autenticación en la solicitud."
-    );
-  }
+  // obtiene y valida el token de autenticación
+  const accessToken = getAccessToken(req.headers.authorization);
 
   try {
-    // Verify and decode the JWT token
-    // const decodedToken = jwt.verify(token, "your-secret-key");
+    // Verificar y decodificar el token
+    const decodedToken = await JWT.decode(accessToken);
 
-    // Extend the request object with the decoded token
-    req.user = {
-      id: "1", //(decodedToken as IUser).id,
-      email: "2", //(decodedToken as IUser).email,
-    };
+    // Validar los datos del token
+    validateTokenData(decodedToken);
+
+    // Asignar los datos del usuario al objeto req
+    const usuario = await Usuario.findByPk(decodedToken.sub, { attributes: { exclude: ['contrasena'] } });
+    req.user = usuario;
 
     next();
   } catch (error) {
