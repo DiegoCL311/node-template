@@ -1,10 +1,10 @@
 import { Request } from "express";
-import { IUser } from "../models/usuario";
+import { IUsuario } from "../models/usuario";
 
 declare global {
   namespace Express {
     export interface Request {
-      user: IUser;
+      usuario?: IUsuario;
     }
   }
 }
