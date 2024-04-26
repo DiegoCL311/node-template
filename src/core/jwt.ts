@@ -30,7 +30,7 @@ export class JwtPayload {
 
 async function encode(payload: JwtPayload): Promise<string> {
     const cert = config.jwt.private;
-    if (!cert) throw new InternalError('Token generation failure');
+    if (!cert) throw new InternalError('Fallo al generar el token');
     return JWT.sign({ ...payload }, cert, { algorithm: 'RS256' });
 }
 

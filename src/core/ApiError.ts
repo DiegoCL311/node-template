@@ -31,7 +31,7 @@ export abstract class ApiError extends Error {
 }
 
 export class AuthFailureError extends ApiError {
-  constructor(message = "Invalid Credentials") {
+  constructor(message = "Credenciales invalidas") {
     super(ErrorType.UNAUTHORIZED, message);
   }
 
@@ -41,7 +41,7 @@ export class AuthFailureError extends ApiError {
 }
 
 export class InternalError extends ApiError {
-  constructor(message = "Internal error") {
+  constructor(message = "Error interno del servidor") {
     super(ErrorType.INTERNAL, message);
   }
 
@@ -71,7 +71,7 @@ export class NotFoundError extends ApiError {
 }
 
 export class ForbiddenError extends ApiError {
-  constructor(message = "Permission denied") {
+  constructor(message = "Permiso denegado") {
     super(ErrorType.FORBIDDEN, message);
   }
 
@@ -91,7 +91,7 @@ export class NoEntryError extends ApiError {
 }
 
 export class BadTokenError extends ApiError {
-  constructor(message = "Token is not valid") {
+  constructor(message = "Token invalido") {
     super(ErrorType.BAD_TOKEN, message);
   }
 
@@ -101,7 +101,7 @@ export class BadTokenError extends ApiError {
 }
 
 export class TokenExpiredError extends ApiError {
-  constructor(message = "Token is expired") {
+  constructor(message = "Token expirado") {
     super(ErrorType.TOKEN_EXPIRED, message);
   }
 
@@ -111,7 +111,7 @@ export class TokenExpiredError extends ApiError {
 }
 
 export class NoDataError extends ApiError {
-  constructor(message = "No data available") {
+  constructor(message = "No hay datos disponibles") {
     super(ErrorType.NO_DATA, message);
   }
 
@@ -121,7 +121,7 @@ export class NoDataError extends ApiError {
 }
 
 export class AccessTokenError extends ApiError {
-  constructor(message = "Invalid access token") {
+  constructor(message = "Token de acceso invalido") {
     super(ErrorType.ACCESS_TOKEN, message);
   }
 

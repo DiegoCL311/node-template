@@ -3,7 +3,7 @@ import { DataTypes } from "sequelize";
 import Joi from "joi";
 
 export interface IUsuario {
-  id: number;
+  id?: number;
   nombre: string;
   email: string;
   contrasena?: string;

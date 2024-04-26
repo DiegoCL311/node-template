@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 import config from "../config/index";
-import User, { loadModel as loadUserModel } from "../models/user";
+import User, { loadModel as loadUserModel } from "../models/usuario";
 
 let sequelize: Sequelize;
 

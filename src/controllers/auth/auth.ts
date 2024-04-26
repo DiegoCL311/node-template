@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { SuccessResponse } from '../../core/ApiResponse';
 import { BadRequestError } from '../../core/ApiError';
-import Usuario from '../../models/user';
+import Usuario from '../../models/usuario';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto-js';
 import JWT from '../../core/jwt';
@@ -10,39 +10,38 @@ import { createTokens } from '../../utils/utils';
 const register = async (req: Request, res: Response) => {
     const { nombre, email, contrasena } = req.body;
 
-    const foundUser = await Usuario.findOne({ where: { email } });
+    const usuarioEncotrado = await Usuario.findOne({ where: { email } });
 
-    if (foundUser)
-        throw new BadRequestError("Email already exists");
+    if (usuarioEncotrado)
+        throw new BadRequestError("Email ya registrado");
 
     const hashedPassword = await bcrypt.hash(contrasena, 10);
 
-    const user = await Usuario.create({
-        id: 0,
+    const usuario = await Usuario.create({
         nombre,
         contrasena: hashedPassword,
         email,
     }, { raw: true });
 
 
-    new SuccessResponse(res, "register Success", user)
+    new SuccessResponse(res, "Registro exitoso", usuario)
 }
 
 const login = async (req: Request, res: Response) => {
     const { email, contrasena } = req.body;
 
-    const user = await Usuario.findOne({ where: { email } }).then((user) => user?.toJSON());
+    const usuario = await Usuario.findOne({ where: { email } }).then((usuario) => usuario?.toJSON());
 
-    if (!user?.contrasena)
-        throw new BadRequestError("Invalid Credentials");
+    if (!usuario?.contrasena)
+        throw new BadRequestError("Credenciales invalidas");
 
-    if (!await bcrypt.compare(contrasena, user.contrasena))
-        throw new BadRequestError("Invalid Credentials");
+    if (!await bcrypt.compare(contrasena, usuario.contrasena))
+        throw new BadRequestError("Credenciales invalidas");
 
     //tokens
-    const { accessToken, refreshToken } = await createTokens(user);
+    const { accessToken, refreshToken } = await createTokens(usuario);
 
-    delete user.contrasena;
+    delete usuario.contrasena;
 
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
@@ -50,7 +49,7 @@ const login = async (req: Request, res: Response) => {
         maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
-    new SuccessResponse(res, "login Success", { user: user, accessToken: accessToken })
+    new SuccessResponse(res, "Inicio de sesion exitoso", { usuario: usuario, accessToken: accessToken })
 }
 
 export default {

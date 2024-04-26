@@ -1,6 +1,6 @@
 import { AuthFailureError, InternalError } from '../core/ApiError';
 import JWT, { JwtPayload } from '../core/jwt';
-import { IUsuario } from '../models/user';
+import { IUsuario } from '../models/usuario';
 import config from '../config';
 
 interface Tokens {
@@ -21,12 +21,12 @@ export const validateTokenData = (payload: JwtPayload): boolean => {
     return true;
 };
 
-export const createTokens = async (user: IUsuario): Promise<Tokens> => {
-    const accessToken = await JWT.encode(new JwtPayload(/* issuer */ config.jwt.issuer, /* audience */ config.jwt.audience, /* subject */ user.id.toString()));
+export const createTokens = async (usuario: IUsuario): Promise<Tokens> => {
+    const accessToken = await JWT.encode(new JwtPayload(/* issuer */ config.jwt.issuer, /* audience */ config.jwt.audience, /* subject */ usuario.id?.toString() || "0"));
 
     if (!accessToken) throw new InternalError();
 
-    const refreshToken = await JWT.encode(new JwtPayload(/* issuer */ config.jwt.issuer, /* audience */ config.jwt.audience, /* subject */ user.id.toString()));
+    const refreshToken = await JWT.encode(new JwtPayload(/* issuer */ config.jwt.issuer, /* audience */ config.jwt.audience, /* subject */ usuario.id?.toString() || "0"));
 
     if (!refreshToken) throw new InternalError();
 
@@ -36,6 +36,6 @@ export const createTokens = async (user: IUsuario): Promise<Tokens> => {
     } as Tokens;
 };
 
-export const createAccessToken = async (user: IUsuario): Promise<string> => {
-    return await JWT.encode(new JwtPayload(config.jwt.issuer, config.jwt.audience, user.id.toString()));
+export const createAccessToken = async (usuario: IUsuario): Promise<string> => {
+    return await JWT.encode(new JwtPayload(config.jwt.issuer, config.jwt.audience, usuario.id?.toString() || "0"));
 };

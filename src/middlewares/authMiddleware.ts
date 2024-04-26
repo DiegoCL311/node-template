@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { IUsuario } from "../models/user";
+import { IUsuario } from "../models/usuario";
 import { AuthFailureError, BadRequestError } from "../core/ApiError";
 import { getAccessToken, validateTokenData } from '../utils/utils'
 import JWT from '../core/jwt';
-import Usuario from "../models/user";
+import Usuario from "../models/usuario";
 
 const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 

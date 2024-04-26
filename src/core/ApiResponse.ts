@@ -26,19 +26,19 @@ export abstract class ApiResponse {
 }
 
 export class AuthFailureResponse extends ApiResponse {
-  constructor(response: Response, message = "Authentication Failure") {
+  constructor(response: Response, message = "Authenticacion fallida") {
     super(response, ResponseStatus.UNAUTHORIZED, message);
   }
 }
 
 export class NotFoundResponse extends ApiResponse {
-  constructor(response: Response, message = "Not Found") {
+  constructor(response: Response, message = "No encontrado") {
     super(response, ResponseStatus.NOT_FOUND, message);
   }
 }
 
 export class ForbiddenResponse extends ApiResponse {
-  constructor(response: Response, message = "Forbidden") {
+  constructor(response: Response, message = "Prohibido") {
     super(response, ResponseStatus.FORBIDDEN, message);
   }
 }
@@ -50,7 +50,7 @@ export class BadRequestResponse extends ApiResponse {
 }
 
 export class InternalErrorResponse extends ApiResponse {
-  constructor(response: Response, message = "Internal Error") {
+  constructor(response: Response, message = "Error interno del servidor") {
     super(response, ResponseStatus.INTERNAL_ERROR, message);
   }
 }
@@ -80,7 +80,7 @@ export class NoContentResponse<T> extends ApiResponse {
 }
 
 export class AccessTokenErrorResponse extends ApiResponse {
-  constructor(response: Response, message = "Access token invalid") {
+  constructor(response: Response, message = "Access token invalido") {
     super(response, ResponseStatus.UNAUTHORIZED, message);
   }
 }

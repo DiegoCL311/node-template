@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import asyncErrorHandler from "../utils/asyncErrorHandler";
 import { validateRequest } from "../middlewares/validateRequest";
 import authController from "../controllers/auth/auth";
-import { registerSchema, loginSchema } from "../models/user"
+import { registerSchema, loginSchema } from "../models/usuario"
 import Joi from "joi";
 
 const app = Router();
