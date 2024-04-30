@@ -1,19 +1,23 @@
-import express from "express";
+import express, { Express } from "express";
 import loaders from "./loaders";
 import dotenv from "dotenv";
 import config from "./config";
 import { logger } from "./loaders/logger";
 
 dotenv.config();
+let app: Express = express();
 
-async function startServer() {
-  const app = express();
+export async function startServer() {
 
   await loaders.init({ expressApp: app });
 
   app.listen(3000, () => {
     console.log("Server is running on http://localhost:", config.port);
   });
+
 }
 
-startServer();
+if (process.env.NODE_ENV !== "test")
+  startServer();
+
+export default app;

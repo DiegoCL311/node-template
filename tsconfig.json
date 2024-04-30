@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "typeRoots": ["@types"],
+    "types": ["jest"],
+    "typeRoots": ["@types", "./types", "./node_modules/@types"],
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "esnext",
@@ -19,7 +20,7 @@
       "*": ["node_modules/*", "src/types/*"]
     }
   },
+  "exclude": ["node_modules", "dist", "coverage"],
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"],
   "files": ["src/types/app-request.d.ts"]
 }

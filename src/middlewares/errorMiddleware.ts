@@ -10,7 +10,7 @@ export function errorMiddleware(
   next: NextFunction
 ) {
 
-  console.error(error);
+  //console.error(error);
 
   switch (true) {
     case error instanceof ApiError:

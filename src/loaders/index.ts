@@ -10,10 +10,10 @@ import { Express } from "express";
 const init = async ({ expressApp }: { expressApp: Express }) => {
   await loggerLoader();
   await sequelizeLoader();
-  await mongooseLoader();
-  await postgresLoader();
-  await mysqlLoader();
-  await mssqlLoader();
+  //await mongooseLoader();
+  //await postgresLoader();
+  //await mysqlLoader();
+  //await mssqlLoader();
   await expressLoader({ app: expressApp });
 };
 

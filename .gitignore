@@ -13,3 +13,6 @@ dist/
 # Dependency lock files
 package-lock.json
 yarn.lock
+
+# tests
+coverage/
