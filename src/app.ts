@@ -7,7 +7,7 @@ import { logger } from "./loaders/logger";
 dotenv.config();
 let app: Express = express();
 
-export async function startServer() {
+export async function startServer(app: Express) {
 
   await loaders.init({ expressApp: app });
 
@@ -16,8 +16,7 @@ export async function startServer() {
   });
 
 }
-
 if (process.env.NODE_ENV !== "test")
-  startServer();
+  startServer(app);
 
 export default app;

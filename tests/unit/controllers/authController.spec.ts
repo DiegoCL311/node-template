@@ -1,9 +1,12 @@
 import request from 'supertest';
-import app, { startServer } from '../../../src/app';
+import app from '../../../src/app';
 import loaders from '../../../src/loaders';
 import { faker } from '@faker-js/faker';
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.test' });
 
 describe('Auth Controller', () => {
+    let user: any;
 
     beforeAll(async () => {
         await loaders.init({ expressApp: app });
@@ -19,14 +22,31 @@ describe('Auth Controller', () => {
 
     });
 
+    it('should successfully register with valid email and password', async () => {
+        const email = faker.internet.email();
+        const contrasena = faker.internet.password();
+
+        user = {
+            nombre: 'testuser',
+            email: email,
+            contrasena: contrasena,
+        };
+
+        const response = await request(app)
+            .post('/api/auth/register')
+            .send(user);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('message', 'Registro exitoso');
+    });
 
     it('should return a valid token when logging in with valid credentials', async () => {
+
+        console.log("AAAAAAAAAAAA", user);
+
         const response = await request(app)
             .post('/api/auth/login')
-            .send({
-                email: 'testing1@testing1.com',
-                contrasena: '75f6tuyibinj',
-            });
+            .send({ email: user.email, contrasena: user.contrasena });
 
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('message', 'Inicio de sesion exitoso');
@@ -115,22 +135,5 @@ describe('Auth Controller', () => {
         expect(response.status).toBe(400);
         expect(response).toHaveProperty('error');
         expect(response.body).toHaveProperty('message', 'contrasena length must be at least 6 characters long');
-    });
-
-
-    it('should successfully register with valid email and password', async () => {
-        const email = faker.internet.email();
-        const contrasena = faker.internet.password();
-
-        const response = await request(app)
-            .post('/api/auth/register')
-            .send({
-                nombre: 'testuser',
-                email: email,
-                contrasena: contrasena,
-            });
-
-        expect(response.status).toBe(200);
-        expect(response.body).toHaveProperty('message', 'Registro exitoso');
     });
 });
