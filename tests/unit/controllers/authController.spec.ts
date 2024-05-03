@@ -42,8 +42,6 @@ describe('Auth Controller', () => {
 
     it('should return a valid token when logging in with valid credentials', async () => {
 
-        console.log("AAAAAAAAAAAA", user);
-
         const response = await request(app)
             .post('/api/auth/login')
             .send({ email: user.email, contrasena: user.contrasena });
