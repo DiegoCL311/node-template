@@ -14,6 +14,7 @@ Creado por [Diego Cruz Lugo](https://github.com/DiegoCL311)
 - **Express:** Framework web para Node.js.
 - **Autenticación:** Sistema de ejemplo base de autenticación.
 - **JWT:** Utilización de tokens JWT para protección de rutas y sesiones.
+- **Validación de datos de la solicitud:** Utilización de libreria Joi para validar los datos en las solicitudes.
 - **Pruebas Unitarias:** Implementación de pruebas unitarias utilizando Jest y supertest.
 - **Sistema de Manejo de Errores:** Implementación de un sistema de manejo de errores a nivel de controlador.
 - **Sistema de Respuestas:** Implementación de un sistema respuestas para mejorar la facilidad de uso.
