@@ -19,10 +19,10 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction) =
     validateTokenData(decodedToken);
 
     // Asignar los datos del usuario al objeto req
-    const usuario = await Usuario.findByPk(decodedToken.sub, { attributes: { exclude: ['contrasena'] } });
+    const usuario = await Usuario.findByPk(decodedToken.sub, { attributes: { exclude: ['contrasena'] } }).then((usuario) => usuario?.toJSON());
     if (!usuario) throw new BadRequestError("Usuario no encontrado");
 
-    req.usuario = usuario.toJSON() as IUsuario;
+    req.usuario = usuario;
 
     next();
   } catch (error) {

@@ -11,6 +11,7 @@ const sequelizeLoader = async () => {
     config.database.mysql.password,
     {
       host: config.database.mysql.host,
+      port: Number(config.database.mysql.port),
       dialect: "mysql",
     }
   );
