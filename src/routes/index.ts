@@ -1,7 +1,7 @@
 import express from "express";
 import auth from "./auth";
 import authMiddleware from "../middlewares/authMiddleware";
-import asyncErrorHandler from "../utils/asyncErrorHandler"; "../utils/asyncErrorHandler";
+import asyncErrorHandler from "../utils/asyncErrorHandler";
 
 const app = express();
 

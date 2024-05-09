@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import Joi, { Schema } from 'joi';
-import { BadRequestError } from '../../src/core/ApiError';
+import { BadRequestError } from './../core/ApiError';
 
 type RequestProp = 'body' | 'params' | 'query' | 'headers';
 
