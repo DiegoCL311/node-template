@@ -1,4 +1,5 @@
 
+
 # Plantilla Base para Proyectos Node.js
 
 Este repositorio es una plantilla que puedes utilizar como base para futuros proyectos Node.js.
@@ -51,7 +52,8 @@ npm run production
 
 ## Docker
 
-Levantar el proyecto utilizando Docker
+Levanta el proyecto utilizando Docker
 ```bash
-** POR HACER **
+docker-compose up
 ```
+#### Listo, ahora solo falta implementar la lógica de tu negocio, algunos de tus requisitos no funcionales están resueltos :) 
