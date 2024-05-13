@@ -5,7 +5,10 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { errorMiddleware } from "../middlewares/errorMiddleware";
 import { requestLogger } from "../middlewares/requestLoggerMiddleware";
+import { notFoundMiddleware } from "../middlewares/404Middleware";
 import helmet from "helmet";
+import asyncErrorHandler from "../../src/utils/asyncErrorHandler";
+import authMiddleware from "../../src/middlewares/authMiddleware";
 
 const expressLoader = async ({ app }: { app: Express }) => {
   app.use(express.json());
@@ -21,7 +24,13 @@ const expressLoader = async ({ app }: { app: Express }) => {
   app.use(requestLogger);
   app.use(helmet());
 
+
   app.use("/api", routes);
+
+
+  app.use("*", notFoundMiddleware);
+  app.use(asyncErrorHandler(authMiddleware))
+
   app.use(errorMiddleware);
 };
 
