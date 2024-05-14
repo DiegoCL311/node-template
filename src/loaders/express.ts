@@ -23,7 +23,7 @@ const expressLoader = async ({ app }: { app: Express }) => {
   app.use(requestLogger);
   app.use(helmet());
 
-  //Rutas no protegidas por middleware de autenticación
+  //Rutas de la applicación
   app.use("/api", routes);
 
   //Middleware para manejar rutas no encontradas
