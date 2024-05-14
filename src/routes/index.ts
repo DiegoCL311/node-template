@@ -1,12 +1,16 @@
 import express from "express";
-import auth from "./auth";
-import authMiddleware from "../middlewares/authMiddleware";
-import asyncErrorHandler from "../utils/asyncErrorHandler";
+import testRoutes from "./test"
+import authRoutes from "./auth";
+import asyncErrorHandler from "../../src/utils/asyncErrorHandler";
+import authMiddleware from "../../src/middlewares/authMiddleware";
+
 
 const app = express();
 
 // Rutas no protegidas por middleware de autenticación
-app.use("/auth", auth);
+app.use("/auth", authRoutes);
 
 // Rutas protegidas por middleware de autenticación
+app.get("/test", asyncErrorHandler(authMiddleware), testRoutes);
+
 export default app;
