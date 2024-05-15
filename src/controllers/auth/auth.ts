@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
 import { SuccessResponse } from '../../core/ApiResponse';
 import { BadRequestError } from '../../core/ApiError';
 import * as usuarioService from "../../services/usuarioService";
-import bcrypt from 'bcrypt';
 import { createTokens } from '../../utils/utils';
 
 const register = async (req: Request, res: Response) => {
@@ -42,7 +42,7 @@ const login = async (req: Request, res: Response) => {
         maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
-    new SuccessResponse(res, "Inicio de sesion exitoso", { usuario: usuario, accessToken: accessToken })
+    new SuccessResponse(res, "Inicio de sesion exitoso", { usuario, accessToken })
 }
 
 export default {

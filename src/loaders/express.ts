@@ -4,10 +4,10 @@ import routes from "../routes";
 
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
 import { errorMiddleware } from "../middlewares/errorMiddleware";
 import { requestLogger } from "../middlewares/requestLoggerMiddleware";
 import { notFoundMiddleware } from "../middlewares/404Middleware";
-import helmet from "helmet";
 
 const expressLoader = async ({ app }: { app: Express }) => {
   app.use(express.json());
@@ -29,6 +29,7 @@ const expressLoader = async ({ app }: { app: Express }) => {
   //Middleware para manejar rutas no encontradas
   app.use("*", notFoundMiddleware);
 
+  //Middleware para manejar errores
   app.use(errorMiddleware);
 };
 
