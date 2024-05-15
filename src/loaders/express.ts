@@ -1,14 +1,13 @@
 import express from "express";
 import { Express } from "express";
-import routes from "../routes/index";
+import routes from "../routes";
+
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
 import { errorMiddleware } from "../middlewares/errorMiddleware";
 import { requestLogger } from "../middlewares/requestLoggerMiddleware";
 import { notFoundMiddleware } from "../middlewares/404Middleware";
-import helmet from "helmet";
-import asyncErrorHandler from "../../src/utils/asyncErrorHandler";
-import authMiddleware from "../../src/middlewares/authMiddleware";
 
 const expressLoader = async ({ app }: { app: Express }) => {
   app.use(express.json());
@@ -24,13 +23,13 @@ const expressLoader = async ({ app }: { app: Express }) => {
   app.use(requestLogger);
   app.use(helmet());
 
-
+  //Rutas de la applicación
   app.use("/api", routes);
 
-
+  //Middleware para manejar rutas no encontradas
   app.use("*", notFoundMiddleware);
-  app.use(asyncErrorHandler(authMiddleware))
 
+  //Middleware para manejar errores
   app.use(errorMiddleware);
 };
 
