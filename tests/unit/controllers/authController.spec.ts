@@ -17,6 +17,8 @@ describe('Auth Controller', () => {
             .post('/api/auth/login')
             .send({});
 
+        console.log(response.body);
+
         expect(response.status).toBe(400);
         expect(response.body).toHaveProperty('message', "email is required, contrasena is required");
 
@@ -25,6 +27,7 @@ describe('Auth Controller', () => {
     it('should successfully register with valid email and password', async () => {
         const email = faker.internet.email();
         const contrasena = faker.internet.password();
+
 
         user = {
             nombre: 'testuser',
@@ -36,6 +39,8 @@ describe('Auth Controller', () => {
             .post('/api/auth/register')
             .send(user);
 
+        console.log(response.body);
+
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('message', 'Registro exitoso');
     });
@@ -45,6 +50,8 @@ describe('Auth Controller', () => {
         const response = await request(app)
             .post('/api/auth/login')
             .send({ email: user.email, contrasena: user.contrasena });
+
+        console.log(response.body);
 
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('message', 'Inicio de sesion exitoso');
@@ -60,6 +67,8 @@ describe('Auth Controller', () => {
                 email: 'testing2@testing1.com',
                 contrasena: '22222222222275f6tuyibinj',
             });
+
+        console.log(response.body);
 
         expect(response.status).toBe(400);
         expect(response).toHaveProperty('error');
@@ -89,6 +98,8 @@ describe('Auth Controller', () => {
                 email: 'con.bo7b87@.mx',
                 contrasena: 'testpassword',
             });
+
+        console.log(response.body);
 
         expect(response.status).toBe(400);
         expect(response).toHaveProperty('error');

@@ -9,7 +9,7 @@ services:
       - ./dbscripts:/docker-entrypoint-initdb.d
     restart: always
     ports:
-    - 3307:3307
+    - 3307:3306
     expose:
       - 3307
     healthcheck:
