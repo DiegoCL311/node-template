@@ -16,6 +16,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -47,10 +55,18 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
 
@@ -63,7 +79,12 @@ jobs:
 
       - name: Initialize database
         run: |
-          docker exec -i $(docker ps -q --filter "ancestor=mysql:8.0") mysql -uroot -prootpassword test < ./dbscripts/mysql.sql
+          if docker exec -i $(docker ps -q --filter "ancestor=mysql:8.0") mysql -uroot -prootpassword test < ./dbscripts/mysql.sql; then
+            echo "Database initialized successfully";
+          else
+            echo "Database initialization failed";
+            exit 1;
+          fi
 
       - name: Run tests
         env:
