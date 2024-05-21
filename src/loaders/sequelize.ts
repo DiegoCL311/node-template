@@ -15,8 +15,7 @@ const sequelizeLoader = async () => {
       dialect: "mysql",
     }
   );
-  console.log(config.database.mysql);
-
+  
   await sequelize.authenticate();
 
 
