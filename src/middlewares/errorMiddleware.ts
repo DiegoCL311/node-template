@@ -22,7 +22,11 @@ export function errorMiddleware(
       break;
 
     default:
-      new InternalError("Error interno.").send(res);
+      if (process.env.NODE_ENV !== "production") {
+        new InternalError(error.message).send(res);
+      } else {
+        new InternalError("Error interno.").send(res);
+      }
       break;
   }
 

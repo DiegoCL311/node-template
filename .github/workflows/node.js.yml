@@ -36,7 +36,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: rootpassword
-          MYSQL_DATABASE: testdb
+          MYSQL_DATABASE: test
         ports:
           - 3307:3306
         options: >-
@@ -63,14 +63,15 @@ jobs:
 
       - name: Initialize database
         run: |
-          docker exec -i $(docker ps -q --filter "ancestor=mysql:8.0") mysql -uroot -prootpassword testdb < ./dbscripts/mysql.sql
+          docker exec -i $(docker ps -q --filter "ancestor=mysql:8.0") mysql -uroot -prootpassword test < ./dbscripts/mysql.sql
 
       - name: Run tests
         env:
-          MYSQL_DATABASE: testdb
+          MYSQL_DATABASE: test
           MYSQL_USER: root
           MYSQL_HOST: 127.0.0.1
           MYSQL_PASSWORD: rootpassword
-          MYSQL_URL: mysql://root:rootpassword@127.0.0.1:3307/testdb
+          MYSQL_URL: mysql://root:rootpassword@127.0.0.1:3307/test
           MYSQL_PORT: 3307
+          NODE_ENV: test
         run: npm test
