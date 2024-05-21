@@ -1,8 +1,8 @@
 import express from "express";
 import testRoutes from "./test"
 import authRoutes from "./auth";
-import asyncErrorHandler from "../../src/utils/asyncErrorHandler";
-import authMiddleware from "../../src/middlewares/authMiddleware";
+import asyncErrorHandler from '../utils/asyncErrorHandler';
+import authMiddleware from "../middlewares/authMiddleware";
 
 
 const app = express();
