@@ -24,6 +24,7 @@ export function errorMiddleware(
     default:
       if (process.env.NODE_ENV !== "production") {
         new InternalError(error.message).send(res);
+        logger.error(error.stack);
       } else {
         new InternalError("Error interno.").send(res);
       }

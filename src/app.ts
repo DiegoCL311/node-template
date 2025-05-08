@@ -1,7 +1,7 @@
 import express, { Express } from "express";
 import loaders from "./loaders";
 import dotenv from "dotenv";
-import config from "./config";
+import { port } from "./config";
 import { logger } from "./loaders/logger";
 
 dotenv.config();
@@ -12,7 +12,7 @@ export async function startServer(app: Express) {
   await loaders.init({ expressApp: app });
 
   app.listen(3000, () => {
-    console.log("Server is running on http://localhost:", config.port);
+    console.log("Server is running on http://localhost:", port);
   });
 
 }

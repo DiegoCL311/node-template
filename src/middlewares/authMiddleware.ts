@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { IUsuario } from "../models/usuario";
 import { AuthFailureError, BadRequestError } from "../core/ApiError";
-import { getAccessToken, validateTokenData } from '../utils/utils'
+import { getAccessToken, validateTokenData } from '../utils/authUtils'
 import JWT from '../core/jwt';
 import Usuario from "../models/usuario";
 

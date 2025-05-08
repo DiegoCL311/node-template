@@ -1,27 +1,33 @@
 import { Sequelize } from "sequelize";
-import config from "../config/index";
-import User, { loadModel as loadUserModel } from "../models/usuario";
+import { db } from "../config/index";
+import User, { loadModel as loadUsuarioModel } from "../models/usuario";
+import Rol, { loadModel as loadRolModel } from "../models/roles";
+import Sesion, { loadModel as loadSesionModel } from "../models/sesion";
 
 let sequelize: Sequelize;
 
 const sequelizeLoader = async () => {
   sequelize = new Sequelize(
-    config.database.mysql.database,
-    config.database.mysql.user,
-    config.database.mysql.password,
+    db.database.mysql.database,
+    db.database.mysql.user,
+    db.database.mysql.password,
     {
-      host: config.database.mysql.host,
-      port: Number(config.database.mysql.port),
+      host: db.database.mysql.host,
+      port: Number(db.database.mysql.port),
       dialect: "mysql",
     }
   );
-  
+
   await sequelize.authenticate();
 
 
-  console.log("Sequelize connected.");
+  console.log(`Sequelize connected to ${db.database.mysql.database}.`);
 
-  loadUserModel(sequelize);
+  // Es necesario cargar los modelos para que Sequelize los reconozca
+  loadUsuarioModel(sequelize);
+  loadRolModel(sequelize);
+  loadSesionModel(sequelize);
+
 
   return sequelize;
 };

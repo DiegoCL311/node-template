@@ -1,19 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
-import Joi, { Schema } from 'joi';
+import { ZodSchema } from 'zod';
 import { BadRequestError } from './../core/ApiError';
 
 type RequestProp = 'body' | 'params' | 'query' | 'headers';
 
-export function validateRequest(schema: Schema, option: RequestProp = 'body') {
+export function validateRequest(schema: ZodSchema, option: RequestProp = 'body') {
 
     return (req: Request, res: Response, next: NextFunction) => {
-        const toValidate = req[option];
-        const { error } = schema.validate(toValidate, { abortEarly: false });
-        if (error) {
-            const message = error.details
-                .map((i) => i.message.replace(/['"]+/g, ''))
-                .join(', ');
-            throw new BadRequestError(message);
+        const datos = req[option];
+        const resultado = schema.safeParse(datos);
+        if (!resultado.success) {
+            // Construir mensaje de error
+            const mensaje = resultado.error.errors.map(err => err.message).join(', ');
+            throw new BadRequestError(mensaje);
         }
         next();
     };
