@@ -6,10 +6,10 @@ let mssqlConnection: mssql.ConnectionPool;
 
 const mssqlLoader = async () => {
   const pool = new ConnectionPool({
-    user: config.database.mssql.user,
-    password: config.database.mssql.password,
-    server: config.database.mssql.server,
-    database: config.database.mssql.database,
+    user: config.database.user,
+    password: config.database.password,
+    server: config.database.host,
+    database: config.database.database,
     options: {
       encrypt: true,
       enableArithAbort: true,

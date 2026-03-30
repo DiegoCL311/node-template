@@ -5,6 +5,7 @@ import { AuthFailureError, BadRequestError } from "../core/ApiError";
 import { getAccessToken, validateTokenData } from '../utils/utils'
 import JWT from '../core/jwt';
 import Usuario from "../models/usuario";
+import { ProtectedRequest } from "../types/app-request";
 
 const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -13,7 +14,7 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction) =
 
   try {
     // Verificar y decodificar el token
-    const decodedToken = await JWT.decode(accessToken);
+    const decodedToken = await JWT.decode(accessToken!);
 
     // Validar los datos del token
     validateTokenData(decodedToken);
@@ -22,7 +23,7 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction) =
     const usuario = await Usuario.findByPk(decodedToken.sub, { attributes: { exclude: ['contrasena'] } }).then((usuario) => usuario?.toJSON());
     if (!usuario) throw new BadRequestError("Usuario no encontrado");
 
-    req.usuario = usuario;
+    (req as ProtectedRequest).usuario = usuario;
 
     next();
   } catch (error) {

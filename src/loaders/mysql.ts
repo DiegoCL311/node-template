@@ -5,14 +5,14 @@ let mysqlConnectionPool: mysql.Pool;
 
 const mysqlLoader = async () => {
   mysqlConnectionPool = mysql.createPool({
-    host: config.database.mysql.host,
-    user: config.database.mysql.user,
-    password: config.database.mysql.password,
-    database: config.database.mysql.database,
+    host: config.database.host,
+    user: config.database.user,
+    password: config.database.password,
+    database: config.database.database,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    port: Number(config.database.mysql.port),
+    port: Number(config.database.port),
   });
 
 

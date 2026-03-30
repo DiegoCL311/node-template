@@ -21,12 +21,12 @@ export const validateTokenData = (payload: JwtPayload): boolean => {
 	return true;
 };
 
-export const createTokens = async (usuario: IUsuario): Promise<Tokens> => {
-	const accessToken = await JWT.encode(new JwtPayload(/* issuer */ config.jwt.issuer, /* audience */ config.jwt.audience, /* subject */ usuario.nUsuario?.toString() || "0"));
+export const createTokens = async (usuario: IUsuario, accessKey: string, refreshKey: string): Promise<Tokens> => {
+	const accessToken = await JWT.encode(new JwtPayload(/* issuer */ config.jwt.issuer, /* audience */ config.jwt.audience, /* subject */ usuario.nUsuario?.toString() || "0", accessKey));
 
 	if (!accessToken) throw new InternalError();
 
-	const refreshToken = await JWT.encode(new JwtPayload(/* issuer */ config.jwt.issuer, /* audience */ config.jwt.audience, /* subject */ usuario.nUsuario?.toString() || "0"));
+	const refreshToken = await JWT.encode(new JwtPayload(/* issuer */ config.jwt.issuer, /* audience */ config.jwt.audience, /* subject */ usuario.nUsuario?.toString() || "0", refreshKey));
 
 	if (!refreshToken) throw new InternalError();
 
@@ -36,8 +36,8 @@ export const createTokens = async (usuario: IUsuario): Promise<Tokens> => {
 	} as Tokens;
 };
 
-export const createAccessToken = async (usuario: IUsuario): Promise<string> => {
-	return await JWT.encode(new JwtPayload(config.jwt.issuer, config.jwt.audience, usuario.nUsuario?.toString() || "0"));
+export const createAccessToken = async (usuario: IUsuario, accessKey: string): Promise<string> => {
+	return await JWT.encode(new JwtPayload(config.jwt.issuer, config.jwt.audience, usuario.nUsuario?.toString() || "0", accessKey));
 };
 
 export function normalizeError(err: unknown) {

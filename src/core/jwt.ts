@@ -18,11 +18,11 @@ export class JwtPayload {
     iat: number;
     exp: number;
 
-    constructor(issuer: string, audience: string, subject: string) {
+    constructor(issuer: string, audience: string, subject: string, prm?: string) {
         this.iss = issuer;
         this.aud = audience;
         this.sub = subject;
-        this.prm = Math.random().toString(36).substring(7);
+        this.prm = prm || Math.random().toString(36).substring(7);
         this.iat = Math.floor(Date.now() / 1000);
         this.exp = this.iat + Number(config.jwt.expiryTime);
     }

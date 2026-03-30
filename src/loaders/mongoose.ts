@@ -4,7 +4,7 @@ import config from "../config";
 let mongoConnection: mongoose.Connection;
 
 const mongooseLoader = async () => {
-  const connection = await mongoose.connect(config.database.mongo.uri, {});
+  const connection = await mongoose.connect(`mongodb://${config.database.user}:${config.database.password}@${config.database.host}:${config.database.port}/${config.database.database}`, {});
 
   mongoConnection = connection.connection;
 
