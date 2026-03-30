@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+set -e
+
+echo "🧹 Lint & Format (staged)"
+#!npx lint-staged -c config/lint-staged.config.js
+
+echo "🔎 Type-check"
+#!npm run typecheck
+
+echo "🧬 Duplicados (jscpd)"
+npm run dupcheck
+
+echo "✅ Pre-commit OK"

@@ -5,11 +5,11 @@ import { BadRequestError, AuthFailureError } from '../../core/ApiError';
 import * as usuarioService from "../../services/usuarioService";
 import * as rolServices from "../../services/rolService";
 import * as sesionService from "../../services/sessionService";
-import { createTokens, validateTokenData } from '../../utils/authUtils';
+import { createTokens, validateTokenData } from '../../utils/utils';
 import { logger } from '../../loaders/logger';
 import jwt from '../../core/jwt';
 import crypto from 'crypto';
-import * as authUtils from '../../utils/authUtils';
+import * as authUtils from '../../utils/utils';
 
 
 const register = async (req: Request, res: Response) => {

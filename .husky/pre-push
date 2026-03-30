@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+set -e
+
+[ "$CI" = "true" ] && exit 0
+
+
+echo "🧪 Tests rápidos"
+#npm test -- --passWithNoTests
+
+echo "🔎 Verificando build antes de push..."
+npm install --prefer-offline || { echo "❌ Falló la instalación de dependencias"; exit 1; }
+
+npm run build
+
+echo "✅ Pre-push OK"

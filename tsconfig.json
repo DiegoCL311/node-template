@@ -18,9 +18,12 @@
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*", "src/types/*"]
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "exclude": ["node_modules", "dist", "coverage"],
+
   "include": ["src/**/*"],
   "files": ["src/types/app-request.d.ts"]
 }

@@ -1,20 +1,20 @@
-import express from "express";
-import { Express } from "express";
+import express, { Express } from "express";
 import routes from "../routes";
-
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
+import { corsOrigin } from "../config";
 import { errorMiddleware } from "../middlewares/errorMiddleware";
 import { requestLogger } from "../middlewares/requestLoggerMiddleware";
 import { notFoundMiddleware } from "../middlewares/404Middleware";
+
 
 const expressLoader = async ({ app }: { app: Express }) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(
     cors({
-      origin: "http://localhost:5173",
+      origin: corsOrigin,
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE"],
       allowedHeaders: ["Content-Type", "Authorization",],

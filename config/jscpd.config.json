@@ -1,0 +1,8 @@
+{
+  "threshold": 1,
+  "min-tokens": 70,
+  "reporters": ["console"],
+  "path": ["../src", "../tests"],
+  "formats-exts": [".ts", ".tsx", ".js"],
+  "absolute": true
+}

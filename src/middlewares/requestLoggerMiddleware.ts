@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { randomUUID } from "node:crypto";
 
 function formatDate(date: Date): string {
   const day = date.getDate().toString().padStart(2, "0");
@@ -6,12 +7,18 @@ function formatDate(date: Date): string {
   const year = date.getFullYear().toString();
   const hours = date.getHours().toString().padStart(2, "0");
   const minutes = date.getMinutes().toString().padStart(2, "0");
-  return `${day}-${month}-${year}:${hours}:${minutes}`;
+  const seconds = date.getSeconds().toString().padStart(2, "0");
+  return `${day}-${month}-${year}:${hours}:${minutes}:${seconds}`;
 }
 
 export function requestLogger(req: Request, res: Response, next: NextFunction) {
   const startTime = Date.now();
   const { method, originalUrl } = req;
+
+  // Generate or get Correlation ID
+  const correlationId = (req.headers["x-request-id"] as string) || randomUUID();
+  req.headers["x-request-id"] = correlationId;
+  res.setHeader("x-request-id", correlationId);
 
   res.on("finish", () => {
     const responseTime = Date.now() - startTime;
@@ -36,7 +43,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
     console.log(
       `[${formatDate(
         new Date()
-      )}] ${method} ${originalUrl} - ${statusColor}${statusCode}\x1b[0m (${responseTime}ms)`
+      )}] [RID: ${correlationId.substring(0, 8)}] ${method} ${originalUrl} - ${statusColor}${statusCode}\x1b[0m (${responseTime}ms)`
     );
   });
 
