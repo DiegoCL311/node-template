@@ -9,6 +9,7 @@ import { corsOrigin } from "../config";
 import { errorMiddleware } from "../middlewares/errorMiddleware";
 import { requestLogger } from "../middlewares/requestLoggerMiddleware";
 import { notFoundMiddleware } from "../middlewares/404Middleware";
+import { sanitizerMiddleware } from "../middlewares/sanitizerMiddleware";
 
 
 const expressLoader = async ({ app }: { app: Express }) => {
@@ -34,6 +35,7 @@ const expressLoader = async ({ app }: { app: Express }) => {
   app.use(cookieParser());
   app.use(requestLogger);
   app.use(helmet());
+  app.use(sanitizerMiddleware);
 
   // Rutas de la aplicación (Versionamiento v1)
   app.use("/api/v1", routes);

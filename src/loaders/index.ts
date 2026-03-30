@@ -7,8 +7,8 @@ import { loggerLoader } from "./logger";
 const init = async ({ expressApp }: { expressApp: Express }) => {
   await loggerLoader()
   await sequelizeLoader();
-  await expressLoader({ app: expressApp });
   await swaggerLoader({ app: expressApp });
+  await expressLoader({ app: expressApp });
 };
 
 export default { init };

@@ -19,4 +19,18 @@ export async function startServer(app: Express) {
 if (process.env.NODE_ENV !== "test")
   startServer(app);
 
+// Handle unhandled rejections
+process.on("unhandledRejection", (err) => {
+  logger.error("UNHANDLED REJECTION! 💥 Shutting down...");
+  logger.error(err);
+  process.exit(1);
+});
+
+// Handle uncaught exceptions
+process.on("uncaughtException", (err) => {
+  logger.error("UNCAUGHT EXCEPTION! 💥 Shutting down...");
+  logger.error(err);
+  process.exit(1);
+});
+
 export default app;

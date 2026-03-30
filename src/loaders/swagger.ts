@@ -16,6 +16,17 @@ const options = {
         url: `http://localhost:${port}/api/v1`,
       },
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+      schemas: {
+      },
+    },
   },
   apis: ["./src/routes/*.ts", "./src/models/*.ts"], // Correct paths to your routes
 };
