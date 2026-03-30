@@ -25,10 +25,31 @@ const options = {
         },
       },
       schemas: {
+        Catalogo: {
+          type: "object",
+          properties: {
+            nIdCatalogo: { type: "integer" },
+            cClave: { type: "string" },
+            cDescripcion: { type: "string" },
+            bActivo: { type: "boolean" },
+          },
+        },
+        CatalogoValor: {
+          type: "object",
+          properties: {
+            nIdCatalogoValor: { type: "integer" },
+            nIdCatalogo: { type: "integer" },
+            nOrden: { type: "integer" },
+            cClave: { type: "string" },
+            cValor: { type: "string" },
+            cValorExtra: { type: "string" },
+            bActivo: { type: "boolean" },
+          },
+        },
       },
     },
   },
-  apis: ["./src/routes/*.ts", "./src/models/*.ts"], // Correct paths to your routes
+  apis: ["./src/controllers/*.ts", "./src/models/*.ts"], // Updated to src/controllers
 };
 
 const swaggerSpec = swaggerJsdoc(options);

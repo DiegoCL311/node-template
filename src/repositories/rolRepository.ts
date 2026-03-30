@@ -45,3 +45,20 @@ export const actualizarRol = async (nRol: number, Rol: Partial<IRol>): Promise<I
     return instancia.toObj();
 };
 
+/**
+ * Elimina un Rol.
+ */
+export const eliminarRol = async (nRol: number): Promise<void> => {
+    const instancia = await RolService.findByPk(nRol);
+    if (!instancia) throw new NoEntryError('Rol no encontrado');
+    await instancia.destroy();
+};
+
+/**
+ * Obtiene todos los Roles.
+ */
+export const obtenerTodosLosRoles = async (): Promise<IRol[]> => {
+    const roles = await RolService.findAll();
+    return roles.map(r => r.toObj());
+};
+

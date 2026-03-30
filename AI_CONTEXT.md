@@ -23,24 +23,23 @@ This document provides a comprehensive overview of the **Node Template** archite
 ---
 
 ## 📜 Coding & Naming Conventions
-- **Naming Prefix**: Use Hungarian-like notation for database fields:
-  - `n` for Numbers (e.g., `nUsuario`, `nRol`, `nEstatus`).
-  - `c` for Strings/Chars (e.g., `cUsuario`, `cNombres`, `cPassword`).
-  - `is` for Booleans (Optional, e.g., `isActivo`).
-- **Standardized Responses**: Use `SuccessResponse(msg, data)`, `NoContentResponse()`, or `SuccessMsgResponse(msg).send(res)`.
-- **Error Handling**: Throw `BadRequestError`, `NotFoundError`, `AuthFailureError`, etc. (Middleware catches them).
-- **Requests**: Cast `Request` to `ProtectedRequest` to access `req.usuario`.
-
----
-
-## 💎 Design Patterns
----
+- **Naming Prefix (Hungarian Notation)**: Apply to BOTH class properties and **Database Columns**:
+  - `n` for Numbers (e.g., `nIdCatalogo`, `nRol`).
+  - `c` for Strings/Chars (e.g., `cClave`, `cDescripcion`).
+  - `b` for Booleans (e.g., `bActivo`, `bValido`).
+  - **Exception**: Control columns like `createdAt`, `updatedAt`, `deletedAt` maintain standard Sequelize camelCase.
+- **Project Structure**:
+  - `src/controllers/`: Presentation Layer (Routes + HTTP Handlers).
+  - `src/services/`: Logic Layer (Agnostic Business Rules).
+  - `src/repositories/`: Data Layer (Pure DB Operations).
+  - `src/models/`: Entity Definitions (Sequelize + Zod).
 
 ## 💎 Design Patterns
-- **Three-Layer Architecture (Unified Presentation)**:
-  1. **Presentation Layer (Routes - `src/routes/`)**: Unifies routing and controller logic. These files contain Express handlers (`req`, `res`) that validate input and call the Service Layer.
-  2. **Logic Layer (Services - `src/services/`)**: The core of the system. Contains all business logic and domain rules. **MUST BE AGNOSTIC** of HTTP/Express (no `req`, `res`, or cookies).
-  3. **Data Layer (Repositories - `src/repositories/`)**: Handles pure CRUD operations on the database. Agnostic of business logic.
+- **Unified Presentation**: Handlers reside in route files under `src/controllers/`.
+- **Agnostic Services**: Services must never import `express` or use `req`/`res`.
+- **Error Handling**:
+  - Repositories: Throw `NoEntryError` when a record is not found for modification/deletion.
+  - Services: Throw `NotFoundError` (or others from `ApiError.ts`) to be caught by the global handler.
 - **Fail-Fast**: Validate everything with Zod at entry points (config, routes).
 - **Traceability**: All requests carry a `x-request-id` header/ID automatically.
 

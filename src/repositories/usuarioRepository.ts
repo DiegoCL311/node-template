@@ -57,3 +57,20 @@ export const actualizarUsuario = async (nUsuario: number, usuario: Partial<IData
     return instancia.toUsuario();
 };
 
+/**
+ * Elimina un usuario.
+ */
+export const eliminarUsuario = async (nUsuario: number): Promise<void> => {
+    const instancia = await Usuario.findByPk(nUsuario);
+    if (!instancia) throw new NoEntryError('Usuario no encontrado');
+    await instancia.destroy();
+};
+
+/**
+ * Obtiene todos los usuarios.
+ */
+export const obtenerTodosLosUsuarios = async (): Promise<IUsuario[]> => {
+    const usuarios = await Usuario.findAll();
+    return usuarios.map(u => u.toUsuario());
+};
+

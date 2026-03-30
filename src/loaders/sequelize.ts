@@ -4,9 +4,17 @@ import config from "../config/index";
 import { logger } from "./logger";
 
 import Usuario from "../models/usuario";
+import Rol from "../models/roles";
+import Sesion from "../models/sesion";
+import Catalogo from "../models/catalogo";
+import CatalogoValor from "../models/catalogoValor";
 
 const decoratorModels = [
   Usuario,
+  Rol,
+  Sesion,
+  Catalogo,
+  CatalogoValor,
 ];
 
 let sequelize: Sequelize;

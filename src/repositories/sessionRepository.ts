@@ -56,3 +56,20 @@ export const actualizarSesion = async (nSesion: number, Sesion: Partial<ISesion>
     return instancia.toObj();
 };
 
+/**
+ * Elimina una Sesion.
+ */
+export const eliminarSesion = async (nSesion: number): Promise<void> => {
+    const instancia = await SesionService.findByPk(nSesion);
+    if (!instancia) throw new NoEntryError('Sesion no encontrado');
+    await instancia.destroy();
+};
+
+/**
+ * Obtiene todas las Sesiones.
+ */
+export const obtenerTodasLasSesiones = async (): Promise<ISesion[]> => {
+    const sesiones = await SesionService.findAll();
+    return sesiones.map(s => s.toObj());
+};
+
