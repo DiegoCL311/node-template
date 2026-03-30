@@ -4,7 +4,7 @@ import rateLimit from "express-rate-limit";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
-import routes from "../routes";
+import routes from "../controllers";
 import { corsOrigin } from "../config";
 import { errorMiddleware } from "../middlewares/errorMiddleware";
 import { requestLogger } from "../middlewares/requestLoggerMiddleware";

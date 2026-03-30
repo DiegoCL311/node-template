@@ -33,46 +33,48 @@ This document provides a comprehensive overview of the **Node Template** archite
 
 ---
 
+## 💎 Design Patterns
+---
+
+## 💎 Design Patterns
+- **Three-Layer Architecture (Unified Presentation)**:
+  1. **Presentation Layer (Routes - `src/routes/`)**: Unifies routing and controller logic. These files contain Express handlers (`req`, `res`) that validate input and call the Service Layer.
+  2. **Logic Layer (Services - `src/services/`)**: The core of the system. Contains all business logic and domain rules. **MUST BE AGNOSTIC** of HTTP/Express (no `req`, `res`, or cookies).
+  3. **Data Layer (Repositories - `src/repositories/`)**: Handles pure CRUD operations on the database. Agnostic of business logic.
+- **Fail-Fast**: Validate everything with Zod at entry points (config, routes).
+- **Traceability**: All requests carry a `x-request-id` header/ID automatically.
+
+---
+
 ## 🛠️ Master Guide: Creating a New CRUD Module (Step-by-Step)
 
 When asked to create a new module (e.g., **"Producto"**), follow these EXACT steps:
 
-### Step 1: Model & Schema (`src/models/producto.ts`)
-1. Define interfaces: `IDataProducto` (for input), `IProductoFull` (for DB).
-2. Create **Zod schemas**: `productoSchema` (required fields) and `productoUpdateSchema` (optional).
-3. Implement `Sequelize` Class using decorators (@Table, @Column, @PrimaryKey, @AutoIncrement).
-4. Add helper methods like `toPublic()` if needed.
+### Step 1: Database Model (`src/models/producto.ts`)
+1. Define interfaces: `IDataProducto` (input), `IProductoFull` (DB).
+2. Create **Zod schemas**: `productoSchema` (required fields).
+3. Implement `Sequelize` Class using decorators.
+4. Register the model in `src/loaders/sequelize.ts`.
 
-### Step 2: Register Model (`src/loaders/sequelize.ts`)
-1. Import the new model.
-2. Add it to the `decoratorModels` array.
+### Step 2: Repository Layer (`src/repositories/productoRepository.ts`)
+1. Implement pure database operations (`create`, `findByPk`, `update`, `destroy`).
+2. These functions must be **agnostic of business logic**.
 
 ### Step 3: Service Layer (`src/services/productoService.ts`)
-1. Create functions using **Sequelize static methods** (`create`, `findAll`, `findByPk`, `update`, `destroy`).
-2. Example functions: `crearProducto`, `obtenerProductos`, `obtenerProductoByPk`, `actualizarProducto`, `eliminarProducto`.
+1. Implement the business logic (e.g., checking stock, calculating prices).
+2. This layer calls the **Repositories** to persist or fetch data.
+3. **CRITICAL**: No Express imports/types here.
 
-### Step 4: Controller Layer (`src/controllers/productoController.ts`)
-1. Implement handlers using `asyncErrorHandler`.
-2. Map HTTP results to `ApiResponse` instances.
-3. Don't handle errors manually; let the global middleware work.
+### Step 4: Unified Route & Handler (`src/routes/producto.ts`)
+1. Define the endpoints and their **handlers** in the same file.
+2. Handlers do:
+   - Authentication (`authMiddleware`).
+   - Validation (`validateRequest`).
+   - Call the **Service Layer**.
+   - Format the final response and manage **cookies** or headers.
+   - Use `ApiResponse` classes for output.
+3. **IMPORTANT**: Include `@openapi` JSDoc annotations for every endpoint.
+4. Register the router in `src/routes/index.ts`.
 
-### Step 5: Router & Swagger (`src/routes/producto.ts`)
-1. Use `asyncErrorHandler` for every route.
-2. Add `authMiddleware` if the route is protected.
-3. Use `validateRequest(productoSchema)` middleware before the controller.
-4. **IMPORTANT**: Include `@openapi` JSDoc annotations for every endpoint.
-
-### Step 6: Main Router Registration (`src/routes/index.ts`)
-1. Register the new router: `app.use("/productos", productoRouter);`.
-
-### Step 7: Swagger Schema (`src/loaders/swagger.ts`)
+### Step 5: Swagger Components (`src/loaders/swagger.ts`)
 1. Add the new object definition in `components/schemas`.
-
----
-
-## 💎 Design Patterns
-- **Three-Tier Architecture**: Routes -> Controllers -> Services -> Models.
-- **Async Error Wrapper**: Always wrap controllers or async calls in `asyncErrorHandler` or use the utility in routes.
-- **Fail-Fast**: Validate everything with Zod at entry points (config, routes).
-- **Traceability**: All requests carry a `x-request-id` header/ID automatically.
-- **Auto-Documentation**: Keep Swagger JSDoc updated in routes at all times.
