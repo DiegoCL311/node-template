@@ -1,6 +1,13 @@
 import { Response } from 'express';
-import { environment } from '../config';
-import { ApiResponse, AuthFailureResponse, AccessTokenErrorResponse, InternalErrorResponse, NotFoundResponse, BadRequestResponse, ForbiddenResponse } from './ApiResponse';
+
+import {
+  AuthFailureResponse,
+  AccessTokenErrorResponse,
+  InternalErrorResponse,
+  NotFoundResponse,
+  BadRequestResponse,
+  ForbiddenResponse,
+} from './ApiResponse';
 
 export enum ErrorType {
   BAD_TOKEN = 'BadTokenError',
@@ -16,7 +23,10 @@ export enum ErrorType {
 }
 
 export abstract class ApiError extends Error {
-  constructor(public type: ErrorType, public message: string = 'error') {
+  constructor(
+    public type: ErrorType,
+    public message: string = 'error',
+  ) {
     super(type);
   }
 
@@ -41,7 +51,9 @@ export class InternalError extends ApiError {
   }
 
   public send(res: Response<any, Record<string, any>>): number {
-    const response = new InternalErrorResponse(process.env.NODE_ENV === 'production' ? 'Internal Error' : this.message);
+    const response = new InternalErrorResponse(
+      process.env.NODE_ENV === 'production' ? 'Internal Error' : this.message,
+    );
     response.send(res);
     return response.getStatus();
   }

@@ -1,35 +1,20 @@
-import {
-  Table,
-  Column,
-  Model,
-  DataType,
-  PrimaryKey,
-  AutoIncrement,
-  Unique,
-  AllowNull,
-  Default,
-  CreatedAt,
-  UpdatedAt,
-  DeletedAt,
-  HasMany,
-} from 'sequelize-typescript';
 import { z } from 'zod';
-import CatalogoValor from './catalogoValor';
 
-// 1. INTERFACES
-export interface ICatalogo {
-  nIdCatalogo?: number;
-  cClave: string;
-  cDescripcion?: string;
-  bActivo?: boolean;
-  cCreatedBy?: string;
-  cUpdatedBy?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
-}
+/**
+ * Modelo público de Catálogo (tipos y schemas Zod).
+ *
+ * Este archivo SOLO expone tipos y schemas. La clase Sequelize vive en
+ * `src/database/models/catalogo.ts`.
+ *
+ * Patrón de tipos:
+ *   - `ICatalogoInput` → entrada para crear/actualizar (derivado de Zod).
+ *   - `ICatalogo`       → salida pública (derivado de Zod, lo que retorna `toObj()`).
+ *   - `ICatalogoFull`   → fila cruda de BD (incluye timestamps y soft-delete).
+ */
 
-// 2. ZOD SCHEMA
+//
+// 1. INPUT SHAPE — fuente de verdad para creación/actualización
+//
 export const catalogoSchema = z.object({
   cClave: z.string().min(1).max(50),
   cDescripcion: z.string().max(200).optional(),
@@ -37,64 +22,33 @@ export const catalogoSchema = z.object({
   cCreatedBy: z.string().max(100).optional(),
 });
 
-// 3. MODEL
-@Table({
-  tableName: 'catalogo',
-  timestamps: true,
-  paranoid: true,
-})
-export class Catalogo extends Model<Catalogo, ICatalogo> implements ICatalogo {
-  @PrimaryKey
-  @AutoIncrement
-  @Column({
-    type: DataType.INTEGER,
-  })
-  declare nIdCatalogo: number;
+/** Tipo derivado del schema de entrada. */
+export type ICatalogoInput = z.infer<typeof catalogoSchema>;
 
-  @AllowNull(false)
-  @Unique('uk_catalogo_clave')
-  @Column({
-    type: DataType.STRING(50),
-  })
-  declare cClave: string;
+//
+// 2. PUBLIC OUTPUT SHAPE — lo que se expone a clientes
+//
+export const catalogoPublicSchema = z.object({
+  nIdCatalogo: z.number(),
+  cClave: z.string(),
+  cDescripcion: z.string().nullable(),
+  bActivo: z.boolean(),
+});
 
-  @Column({
-    type: DataType.STRING(200),
-  })
-  declare cDescripcion: string;
+/** Tipo derivado del schema público. */
+export type ICatalogo = z.infer<typeof catalogoPublicSchema>;
 
-  @AllowNull(false)
-  @Default(true)
-  @Column({
-    type: DataType.TINYINT,
-  })
-  declare bActivo: boolean;
-
-  @Column({
-    type: DataType.STRING(100),
-  })
-  declare cCreatedBy: string;
-
-  @Column({
-    type: DataType.STRING(100),
-  })
-  declare cUpdatedBy: string;
-
-  @CreatedAt
-  declare createdAt: Date;
-
-  @UpdatedAt
-  declare updatedAt: Date;
-
-  @DeletedAt
-  declare deletedAt: Date;
-
-  @HasMany(() => CatalogoValor)
-  valores!: CatalogoValor[];
-
-  public toObj(): ICatalogo {
-    return this.get({ plain: true });
-  }
+//
+// 3. FULL ROW — fila cruda de la base de datos (uso interno del data layer)
+//
+export interface ICatalogoFull {
+  nIdCatalogo: number;
+  cClave: string;
+  cDescripcion: string | null;
+  bActivo: boolean;
+  cCreatedBy: string | null;
+  cUpdatedBy: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
 }
-
-export default Catalogo;

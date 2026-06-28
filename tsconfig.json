@@ -2,28 +2,31 @@
   "compilerOptions": {
     "types": ["jest"],
     "typeRoots": ["@types", "./types", "./node_modules/@types"],
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "esnext",
+    "module": "node18",
+    "moduleResolution": "node16",
+    "target": "es2022",
+    "lib": ["ES2022"],
     "allowJs": false,
+    "strict": true,
     "strictNullChecks": true,
     "noImplicitAny": true,
-    "strict": true,
     "strictFunctionTypes": true,
     "noImplicitThis": false,
-    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "useUnknownInCatchVariables": true,
     "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "outDir": "dist",
-    "baseUrl": ".",
-    "paths": {
-      "*": ["node_modules/*", "src/types/*"]
-    },
+    "rootDir": "./src",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "exclude": ["node_modules", "dist", "coverage"],
-
   "include": ["src/**/*"],
-  "files": ["src/types/app-request.d.ts"]
+  "exclude": ["node_modules", "dist", "coverage"]
 }

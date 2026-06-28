@@ -1,21 +1,15 @@
-import "reflect-metadata";
-import { Sequelize } from "sequelize-typescript";
-import config from "../config/index";
-import { logger } from "./logger";
+import 'reflect-metadata';
+import { Sequelize } from 'sequelize-typescript';
 
-import Usuario from "../models/usuario";
-import Rol from "../models/roles";
-import Sesion from "../models/sesion";
-import Catalogo from "../models/catalogo";
-import CatalogoValor from "../models/catalogoValor";
+import { logger } from './logger';
+import config from '../config/index';
+import Catalogo from '../database/models/catalogo';
+import CatalogoValor from '../database/models/catalogoValor';
+import Rol from '../database/models/roles';
+import Sesion from '../database/models/sesion';
+import Usuario from '../database/models/usuario';
 
-const decoratorModels = [
-  Usuario,
-  Rol,
-  Sesion,
-  Catalogo,
-  CatalogoValor,
-];
+const decoratorModels = [Usuario, Rol, Sesion, Catalogo, CatalogoValor];
 
 let sequelize: Sequelize;
 
@@ -26,8 +20,8 @@ const sequelizeLoader = async () => {
     password: config.database.password,
     host: config.database.host,
     port: Number(config.database.port),
-    dialect: "mysql",
-    timezone: "-07:00",
+    dialect: 'mysql',
+    timezone: '-07:00',
     dialectOptions: {
       dateStrings: true,
       typeCast: true,
@@ -47,7 +41,7 @@ const sequelizeLoader = async () => {
   await sequelize.authenticate();
   await sequelize.query(`SET time_zone = '-07:00'`);
 
-  logger.info("Sequelize conectado. Modelos cargados correctamente.");
+  logger.info('Sequelize conectado. Modelos cargados correctamente.');
 
   return sequelize;
 };

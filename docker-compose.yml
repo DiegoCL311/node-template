@@ -5,24 +5,23 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_TCP_PORT: 3307
-    volumes: 
+    volumes:
       - ./dbscripts:/docker-entrypoint-initdb.d
     restart: always
     ports:
-    - 3307:3306
+      - 3307:3306
     expose:
       - 3307
     healthcheck:
       test: 'cat /tmp/mysql-general-log.log | grep "root@localhost on  using Socket"'
       interval: 10s
       retries: 120
-      
 
   api:
     build:
       context: .
       dockerfile: Dockerfile
-    env_file: 
+    env_file:
       - .env
     environment:
       - MYSQL_HOST=mysql
@@ -30,7 +29,7 @@ services:
       - MYSQL_PASSWORD=root
       - MYSQL_PORT=3307
     ports:
-      - "3000:3000"
+      - '3000:3000'
     depends_on:
       - mysql
     restart: always

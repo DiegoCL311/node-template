@@ -1,15 +1,13 @@
-import winston from "winston";
+import winston from 'winston';
 
 let logger: winston.Logger;
 
 const loggerLoader = async () => {
-
   const consoleFormat = winston.format.combine(
     winston.format.colorize(),
-    winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     winston.format.errors({ stack: true }),
     winston.format.printf(({ timestamp, level, message, stack, ...meta }) => {
-
       let log = `${timestamp} [${level}]: ${message}`;
 
       if (Object.keys(meta).length) {
@@ -21,7 +19,7 @@ const loggerLoader = async () => {
       }
 
       return log;
-    })
+    }),
   );
 
   const fileFormat = winston.format.combine(
@@ -33,38 +31,37 @@ const loggerLoader = async () => {
         level: level,
         message: message,
         ...meta,
-        stack: stack || null
+        stack: stack || null,
       });
-    })
+    }),
   );
 
   logger = winston.createLogger({
-    level: "debug",
+    level: 'debug',
     transports: [
-
       new winston.transports.File({
-        filename: "logs/error.log",
-        level: "error",
-        format: fileFormat
+        filename: 'logs/error.log',
+        level: 'error',
+        format: fileFormat,
       }),
 
       new winston.transports.File({
-        filename: "logs/combined.log",
-        format: fileFormat
+        filename: 'logs/combined.log',
+        format: fileFormat,
       }),
 
       new winston.transports.Console({
-        format: consoleFormat
-      })
-    ]
+        format: consoleFormat,
+      }),
+    ],
   });
 };
 
-process.on("unhandledRejection", (err: Error) => {
-  logger.error("Unhandled Rejection", { message: err.message, stack: err.stack });
+process.on('unhandledRejection', (err: Error) => {
+  logger.error('Unhandled Rejection', { message: err.message, stack: err.stack });
 
-  console.error("Unhandled Rejection:", err.message);
-  console.error(err.stack?.split("\n")[1]);
+  console.error('Unhandled Rejection:', err.message);
+  console.error(err.stack?.split('\n')[1]);
 });
 
 export { loggerLoader, logger };

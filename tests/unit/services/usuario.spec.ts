@@ -1,96 +1,141 @@
-import * as UsuarioService from '../../../src/services/usuarioService';
-import { NoEntryError } from '../../../src/core/ApiError';
-import Usuario from '../../../src/models/usuario';
+import { BadRequestError, NotFoundError } from '../../../src/core/ApiError';
+import { IUsuario, IDataUsuario } from '../../../src/models/usuario';
+import * as usuarioRepository from '../../../src/repositories/usuarioRepository';
+import * as usuarioService from '../../../src/services/usuarioService';
 
-jest.mock('../../../src/models/usuario');
+jest.mock('../../../src/repositories/usuarioRepository', () => ({
+  obtenerTodosLosUsuarios: jest.fn(),
+  obtenerUsuarioByPk: jest.fn(),
+  obtenerUsuarioFullByUsuario: jest.fn(),
+  obtenerUsuarioFullById: jest.fn(),
+  crearUsuario: jest.fn(),
+  actualizarUsuario: jest.fn(),
+  eliminarUsuario: jest.fn(),
+}));
+
+const mockedRepo = usuarioRepository as jest.Mocked<typeof usuarioRepository>;
 
 describe('Usuario Service', () => {
-    const mockUserModel = {
-        id: 1,
-        nombre: 'John Doe',
-        email: 'john@example.com',
-        contrasena: 'securepassword',
-        toJSON: function () { return mockUserJSON; }
-    };
+  const mockUser: IUsuario = {
+    nUsuario: 1,
+    nRol: 1,
+    nEstatus: 1,
+    cNombres: 'John',
+    cApellidos: 'Doe',
+    cUsuario: 'johndoe',
+  };
 
-    const mockUserJSON = {
-        id: 1,
-        nombre: 'John Doe',
-        email: 'john@example.com',
-        contrasena: 'securepassword',
-    };
+  const mockUserData: IDataUsuario = {
+    nRol: 1,
+    cNombres: 'John',
+    cApellidos: 'Doe',
+    cUsuario: 'johndoe',
+    cPassword: 'securepassword',
+  };
 
-    beforeEach(() => {
-        jest.clearAllMocks();
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('fetchAllUsers', () => {
+    it('should return an array of users', async () => {
+      mockedRepo.obtenerTodosLosUsuarios.mockResolvedValue([mockUser]);
+
+      const users = await usuarioService.fetchAllUsers();
+
+      expect(users).toEqual([mockUser]);
+      expect(mockedRepo.obtenerTodosLosUsuarios).toHaveBeenCalledTimes(1);
     });
 
-    describe('encontrarUsuarioByEmail', () => {
-        it('should return a user when found', async () => {
-            Usuario.findOne = jest.fn().mockResolvedValue(mockUserModel);
-            const user = await UsuarioService.encontrarUsuarioByEmail('john@example.com');
-            expect(user).toEqual(mockUserJSON);
-        });
+    it('should return an empty array when no users exist', async () => {
+      mockedRepo.obtenerTodosLosUsuarios.mockResolvedValue([]);
 
-        it('should return null when user is not found', async () => {
-            Usuario.findOne = jest.fn().mockResolvedValue(null);
-            const user = await UsuarioService.encontrarUsuarioByEmail('john@example.com');
-            expect(user).toBeNull();
-        });
+      const users = await usuarioService.fetchAllUsers();
+
+      expect(users).toEqual([]);
+    });
+  });
+
+  describe('fetchUserByPk', () => {
+    it('should return a user when found', async () => {
+      mockedRepo.obtenerUsuarioByPk.mockResolvedValue(mockUser);
+
+      const user = await usuarioService.fetchUserByPk(1);
+
+      expect(user).toEqual(mockUser);
+      expect(mockedRepo.obtenerUsuarioByPk).toHaveBeenCalledWith(1);
     });
 
-    describe('crearUsuario', () => {
-        it('should create a user successfully', async () => {
-            Usuario.create = jest.fn().mockResolvedValue(mockUserModel);
-            const user = await UsuarioService.crearUsuario('John Doe', 'john@example.com', 'securepassword');
-            expect(user).toEqual(mockUserJSON);
-        });
+    it('should throw NotFoundError when user is not found', async () => {
+      mockedRepo.obtenerUsuarioByPk.mockResolvedValue(null);
+
+      await expect(usuarioService.fetchUserByPk(999)).rejects.toThrow(NotFoundError);
+    });
+  });
+
+  describe('registerNewUser', () => {
+    it('should create a user when cUsuario is not taken', async () => {
+      mockedRepo.obtenerUsuarioFullByUsuario.mockResolvedValue(null);
+      mockedRepo.crearUsuario.mockResolvedValue(mockUser);
+
+      const result = await usuarioService.registerNewUser(mockUserData);
+
+      expect(result).toEqual(mockUser);
+      expect(mockedRepo.obtenerUsuarioFullByUsuario).toHaveBeenCalledWith(mockUserData.cUsuario);
+      expect(mockedRepo.crearUsuario).toHaveBeenCalledWith(mockUserData);
     });
 
-    describe('encontrarUsuarioByPk', () => {
-        it('should return a user when found', async () => {
-            Usuario.findByPk = jest.fn().mockResolvedValue(mockUserModel);
-            const user = await UsuarioService.encontrarUsuarioByPk(1);
-            expect(user).toEqual(mockUserJSON);
-        });
+    it('should throw BadRequestError when cUsuario already exists', async () => {
+      mockedRepo.obtenerUsuarioFullByUsuario.mockResolvedValue({
+        ...mockUser,
+        cPassword: 'hashed',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
 
-        it('should return null when user is not found', async () => {
-            Usuario.findByPk = jest.fn().mockResolvedValue(null);
-            const user = await UsuarioService.encontrarUsuarioByPk(1);
-            expect(user).toBeNull();
-        });
+      await expect(usuarioService.registerNewUser(mockUserData)).rejects.toThrow(BadRequestError);
+      expect(mockedRepo.crearUsuario).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('modifyUser', () => {
+    it('should update a user when it exists', async () => {
+      mockedRepo.obtenerUsuarioByPk.mockResolvedValue(mockUser);
+      mockedRepo.actualizarUsuario.mockResolvedValue(mockUser);
+
+      const result = await usuarioService.modifyUser(1, { cNombres: 'Jane' });
+
+      expect(result).toEqual(mockUser);
+      expect(mockedRepo.obtenerUsuarioByPk).toHaveBeenCalledWith(1);
+      expect(mockedRepo.actualizarUsuario).toHaveBeenCalledWith(1, { cNombres: 'Jane' });
     });
 
-    describe('actualizarUsuario', () => {
-        it('should update a user successfully', async () => {
+    it('should throw NotFoundError when user does not exist', async () => {
+      mockedRepo.obtenerUsuarioByPk.mockResolvedValue(null);
 
-            const janeDoeJson = {
-                id: 1,
-                nombre: 'Jane Doe',
-                email: 'jane@example.com',
-                contrasena: 'securepassword'
-            };
-
-            const janeDoeModel = {
-                id: 1,
-                nombre: 'Jane Doe',
-                email: 'jane@example.com',
-                contrasena: 'securepassword',
-                toJSON: function () {
-                    return janeDoeJson;
-                }
-            };
-
-            Usuario.findByPk = jest.fn().mockResolvedValue({
-                ...janeDoeModel,
-                update: jest.fn().mockResolvedValue(janeDoeModel)
-            });
-            const user = await UsuarioService.actualizarUsuario(1, 'Jane Doe', 'jane@example.com');
-            expect(user).toEqual(janeDoeJson);
-        });
-
-        it('should throw NoEntryError when user is not found', async () => {
-            Usuario.findByPk = jest.fn().mockResolvedValue(null);
-            await expect(UsuarioService.actualizarUsuario(1, 'Jane Doe', 'jane@example.com')).rejects.toThrow(NoEntryError);
-        });
+      await expect(usuarioService.modifyUser(999, { cNombres: 'Jane' })).rejects.toThrow(
+        NotFoundError,
+      );
+      expect(mockedRepo.actualizarUsuario).not.toHaveBeenCalled();
     });
+  });
+
+  describe('removeUser', () => {
+    it('should remove a user when it exists', async () => {
+      mockedRepo.obtenerUsuarioByPk.mockResolvedValue(mockUser);
+      mockedRepo.eliminarUsuario.mockResolvedValue(undefined);
+
+      await usuarioService.removeUser(1);
+
+      expect(mockedRepo.obtenerUsuarioByPk).toHaveBeenCalledWith(1);
+      expect(mockedRepo.eliminarUsuario).toHaveBeenCalledWith(1);
+    });
+
+    it('should throw NotFoundError when user does not exist', async () => {
+      mockedRepo.obtenerUsuarioByPk.mockResolvedValue(null);
+
+      await expect(usuarioService.removeUser(999)).rejects.toThrow(NotFoundError);
+      expect(mockedRepo.eliminarUsuario).not.toHaveBeenCalled();
+    });
+  });
 });

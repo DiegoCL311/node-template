@@ -1,33 +1,27 @@
-import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import { IUsuario } from "../models/usuario";
-import { AuthFailureError, BadRequestError } from "../core/ApiError";
-import { getAccessToken, validateTokenData } from '../utils/utils'
+import { Request, Response, NextFunction } from 'express';
+
+import { ERROR_MESSAGES } from '../constants';
+import { AuthFailureError, BadRequestError } from '../core/ApiError';
 import JWT from '../core/jwt';
-import Usuario from "../models/usuario";
-import { ProtectedRequest } from "../types/app-request";
+import * as usuarioRepository from '../repositories/usuarioRepository';
+import { ProtectedRequest } from '../types/app-request';
+import { getAccessToken } from '../utils/utils';
 
 const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-
-  // obtiene y valida el token de autenticación
   const accessToken = getAccessToken(req.headers.authorization);
 
   try {
-    // Verificar y decodificar el token
-    const decodedToken = await JWT.decode(accessToken!);
+    const decodedToken = await JWT.validate(accessToken!);
 
-    // Validar los datos del token
-    validateTokenData(decodedToken);
+    const usuario = await usuarioRepository.obtenerUsuarioByPk(Number(decodedToken.sub));
 
-    // Asignar los datos del usuario al objeto req
-    const usuario = await Usuario.findByPk(decodedToken.sub, { attributes: { exclude: ['contrasena'] } }).then((usuario) => usuario?.toJSON());
-    if (!usuario) throw new BadRequestError("Usuario no encontrado");
+    if (!usuario) throw new BadRequestError(ERROR_MESSAGES.USER_NOT_FOUND);
 
     (req as ProtectedRequest).usuario = usuario;
 
     next();
-  } catch (error) {
-    next(new AuthFailureError("Token de autenticación inválido."));
+  } catch (_error) {
+    next(new AuthFailureError(ERROR_MESSAGES.AUTH_TOKEN_INVALID_RESPONSE));
   }
 };
 

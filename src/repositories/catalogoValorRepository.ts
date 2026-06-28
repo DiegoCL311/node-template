@@ -1,11 +1,14 @@
-import CatalogoValor, { ICatalogoValor } from '../models/catalogoValor';
-import Catalogo from '../models/catalogo';
 import { NoEntryError } from '../core/ApiError';
+import Catalogo from '../database/models/catalogo';
+import CatalogoValor from '../database/models/catalogoValor';
+import { type ICatalogoValor, type ICatalogoValorInput } from '../models/catalogoValor';
 
 /**
  * Obtiene un valor por ID.
  */
-export const obtenerRepoValorById = async (nIdCatalogoValor: number): Promise<ICatalogoValor | null> => {
+export const obtenerRepoValorById = async (
+  nIdCatalogoValor: number,
+): Promise<Readonly<ICatalogoValor> | null> => {
   const model = await CatalogoValor.findByPk(nIdCatalogoValor);
   return model ? model.toObj() : null;
 };
@@ -13,7 +16,9 @@ export const obtenerRepoValorById = async (nIdCatalogoValor: number): Promise<IC
 /**
  * Crea un valor de catálogo.
  */
-export const crearRepoValor = async (data: ICatalogoValor): Promise<ICatalogoValor> => {
+export const crearRepoValor = async (
+  data: ICatalogoValorInput,
+): Promise<Readonly<ICatalogoValor>> => {
   const model = await CatalogoValor.create(data);
   return model.toObj();
 };
@@ -21,7 +26,10 @@ export const crearRepoValor = async (data: ICatalogoValor): Promise<ICatalogoVal
 /**
  * Actualiza un valor.
  */
-export const actualizarRepoValor = async (nIdCatalogoValor: number, data: Partial<ICatalogoValor>): Promise<ICatalogoValor> => {
+export const actualizarRepoValor = async (
+  nIdCatalogoValor: number,
+  data: Partial<ICatalogoValorInput>,
+): Promise<Readonly<ICatalogoValor>> => {
   const instancia = await CatalogoValor.findByPk(nIdCatalogoValor);
   if (!instancia) throw new NoEntryError('Valor no encontrado');
   await instancia.update(data);
@@ -40,25 +48,31 @@ export const eliminarRepoValor = async (nIdCatalogoValor: number): Promise<void>
 /**
  * Obtiene todos los valores de un catálogo por el ID del catálogo.
  */
-export const obtenerValoresPorCatalogoId = async (nIdCatalogo: number): Promise<ICatalogoValor[]> => {
+export const obtenerValoresPorCatalogoId = async (
+  nIdCatalogo: number,
+): Promise<Readonly<ICatalogoValor>[]> => {
   const models = await CatalogoValor.findAll({
     where: { nIdCatalogo },
-    order: [['orden', 'ASC']],
+    order: [['nOrden', 'ASC']],
   });
-  return models.map(m => m.toObj());
+  return models.map((m) => m.toObj());
 };
 
 /**
  * Obtiene todos los valores de un catálogo por su clave.
  */
-export const obtenerValoresPorCatalogoClave = async (cClave: string): Promise<ICatalogoValor[]> => {
+export const obtenerValoresPorCatalogoClave = async (
+  cClave: string,
+): Promise<Readonly<ICatalogoValor>[]> => {
   const models = await CatalogoValor.findAll({
-    include: [{
-      model: Catalogo,
-      where: { cClave },
-      attributes: [],
-    }],
-    order: [['orden', 'ASC']],
+    include: [
+      {
+        model: Catalogo,
+        where: { cClave },
+        attributes: [],
+      },
+    ],
+    order: [['nOrden', 'ASC']],
   });
-  return models.map(m => m.toObj());
+  return models.map((m) => m.toObj());
 };

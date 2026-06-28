@@ -1,10 +1,13 @@
-import Catalogo, { ICatalogo } from '../models/catalogo';
 import { NoEntryError } from '../core/ApiError';
+import Catalogo from '../database/models/catalogo';
+import { type ICatalogo, type ICatalogoInput } from '../models/catalogo';
 
 /**
  * Obtiene un catálogo por ID.
  */
-export const obtenerRepoCatalogoById = async (nIdCatalogo: number): Promise<ICatalogo | null> => {
+export const obtenerRepoCatalogoById = async (
+  nIdCatalogo: number,
+): Promise<Readonly<ICatalogo> | null> => {
   const model = await Catalogo.findByPk(nIdCatalogo);
   return model ? model.toObj() : null;
 };
@@ -12,7 +15,9 @@ export const obtenerRepoCatalogoById = async (nIdCatalogo: number): Promise<ICat
 /**
  * Obtiene un catálogo por Clave.
  */
-export const obtenerRepoCatalogoByClave = async (cClave: string): Promise<ICatalogo | null> => {
+export const obtenerRepoCatalogoByClave = async (
+  cClave: string,
+): Promise<Readonly<ICatalogo> | null> => {
   const model = await Catalogo.findOne({ where: { cClave } });
   return model ? model.toObj() : null;
 };
@@ -20,7 +25,7 @@ export const obtenerRepoCatalogoByClave = async (cClave: string): Promise<ICatal
 /**
  * Crea un catálogo.
  */
-export const crearRepoCatalogo = async (data: ICatalogo): Promise<ICatalogo> => {
+export const crearRepoCatalogo = async (data: ICatalogoInput): Promise<Readonly<ICatalogo>> => {
   const model = await Catalogo.create(data);
   return model.toObj();
 };
@@ -28,7 +33,10 @@ export const crearRepoCatalogo = async (data: ICatalogo): Promise<ICatalogo> => 
 /**
  * Actualiza un catálogo.
  */
-export const actualizarRepoCatalogo = async (nIdCatalogo: number, data: Partial<ICatalogo>): Promise<ICatalogo> => {
+export const actualizarRepoCatalogo = async (
+  nIdCatalogo: number,
+  data: Partial<ICatalogoInput>,
+): Promise<Readonly<ICatalogo>> => {
   const instancia = await Catalogo.findByPk(nIdCatalogo);
   if (!instancia) throw new NoEntryError('Catálogo no encontrado');
   await instancia.update(data);
@@ -47,7 +55,7 @@ export const eliminarRepoCatalogo = async (nIdCatalogo: number): Promise<void> =
 /**
  * Obtiene todos los catálogos.
  */
-export const obtenerTodosRepoCatalogos = async (): Promise<ICatalogo[]> => {
+export const obtenerTodosRepoCatalogos = async (): Promise<Readonly<ICatalogo>[]> => {
   const models = await Catalogo.findAll();
-  return models.map(m => m.toObj());
+  return models.map((m) => m.toObj());
 };

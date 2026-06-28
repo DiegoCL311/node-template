@@ -1,10 +1,12 @@
-import { Router, Request, Response } from "express";
-import asyncErrorHandler from "../utils/asyncErrorHandler";
-import { validateRequest } from "../middlewares/validateRequest";
-import { usuarioSchema, loginSchema } from "../models/usuario";
-import * as authService from "../services/authService";
-import { SuccessResponse, NoContentResponse } from "../core/ApiResponse";
-import { AuthFailureError } from "../core/ApiError";
+import { Router, Request, Response } from 'express';
+
+import { COOKIE_OPTIONS, ERROR_MESSAGES } from '../constants';
+import { AuthFailureError } from '../core/ApiError';
+import { SuccessResponse, NoContentResponse } from '../core/ApiResponse';
+import { validateRequest } from '../middlewares/validateRequest';
+import { usuarioSchema, loginSchema } from '../models/usuario';
+import * as authService from '../services/authService';
+import asyncErrorHandler from '../utils/asyncErrorHandler';
 
 const app = Router();
 
@@ -24,10 +26,14 @@ const app = Router();
  *       201:
  *         description: User registered successfully.
  */
-app.post("/register", validateRequest(usuarioSchema), asyncErrorHandler(async (req: Request, res: Response) => {
+app.post(
+  '/register',
+  validateRequest(usuarioSchema),
+  asyncErrorHandler(async (req: Request, res: Response) => {
     const nuevoUsuario = await authService.registerUser(req.body);
-    new SuccessResponse("Registro exitoso", nuevoUsuario).send(res);
-}));
+    new SuccessResponse('Registro exitoso', nuevoUsuario).send(res);
+  }),
+);
 
 /**
  * @openapi
@@ -45,18 +51,21 @@ app.post("/register", validateRequest(usuarioSchema), asyncErrorHandler(async (r
  *       200:
  *         description: Login successful.
  */
-app.post("/login", validateRequest(loginSchema), asyncErrorHandler(async (req: Request, res: Response) => {
+app.post(
+  '/login',
+  validateRequest(loginSchema),
+  asyncErrorHandler(async (req: Request, res: Response) => {
     const { cUsuario, cPassword } = req.body;
-    const { accessToken, refreshToken, usuario, rol } = await authService.loginUser(cUsuario, cPassword);
+    const { accessToken, refreshToken, usuario, rol } = await authService.loginUser(
+      cUsuario,
+      cPassword,
+    );
 
-    res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7,
-    });
+    res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS.refreshToken);
 
-    new SuccessResponse("Inicio de sesion exitoso", { usuario, rol, accessToken }).send(res);
-}));
+    new SuccessResponse('Inicio de sesion exitoso', { usuario, rol, accessToken }).send(res);
+  }),
+);
 
 /**
  * @openapi
@@ -68,20 +77,19 @@ app.post("/login", validateRequest(loginSchema), asyncErrorHandler(async (req: R
  *       200:
  *         description: Logout successful.
  */
-app.post('/logout', asyncErrorHandler(async (req: Request, res: Response) => {
+app.post(
+  '/logout',
+  asyncErrorHandler(async (req: Request, res: Response) => {
     const refreshToken = req.cookies?.refreshToken;
     if (refreshToken) {
-        await authService.logoutUser(refreshToken);
+      await authService.logoutUser(refreshToken);
     }
-    
-    res.clearCookie('refreshToken', {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-    });
+
+    res.clearCookie('refreshToken', COOKIE_OPTIONS.refreshTokenClear);
 
     new NoContentResponse('Logout successful').send(res);
-}));
+  }),
+);
 
 /**
  * @openapi
@@ -93,13 +101,16 @@ app.post('/logout', asyncErrorHandler(async (req: Request, res: Response) => {
  *       200:
  *         description: New access token generated.
  */
-app.get('/refresh-token', asyncErrorHandler(async (req: Request, res: Response) => {
+app.get(
+  '/refresh-token',
+  asyncErrorHandler(async (req: Request, res: Response) => {
     const refreshToken = req.cookies?.refreshToken;
-    if (!refreshToken) throw new AuthFailureError('Refresh token missing from cookie');
+    if (!refreshToken) throw new AuthFailureError(ERROR_MESSAGES.REFRESH_TOKEN_MISSING);
 
     const { accessToken, usuario, rol } = await authService.refreshUserTokens(refreshToken);
 
     new SuccessResponse('Access refreshed successfully', { usuario, rol, accessToken }).send(res);
-}));
+  }),
+);
 
-export default app;
+export default app;

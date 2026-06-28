@@ -20,9 +20,17 @@ enum ResponseStatus {
 }
 
 export abstract class ApiResponse {
-  constructor(protected statusCode: StatusCode, protected status: ResponseStatus, protected message: string) { }
+  constructor(
+    protected statusCode: StatusCode,
+    protected status: ResponseStatus,
+    protected message: string,
+  ) {}
 
-  protected prepare<T extends ApiResponse>(res: Response, response: T, headers: { [key: string]: string }): Response {
+  protected prepare<T extends ApiResponse>(
+    res: Response,
+    response: T,
+    headers: { [key: string]: string },
+  ): Response {
     for (const [key, value] of Object.entries(headers)) res.append(key, value);
     return res.status(this.status).json(ApiResponse.sanitize(response));
   }
@@ -101,7 +109,10 @@ export class FailureMsgResponse extends ApiResponse {
 }
 
 export class SuccessResponse<T> extends ApiResponse {
-  constructor(message: string, private data: T) {
+  constructor(
+    message: string,
+    private data: T,
+  ) {
     super(StatusCode.SUCCESS, ResponseStatus.SUCCESS, message);
   }
 
@@ -134,7 +145,11 @@ export class AccessTokenErrorResponse extends ApiResponse {
 }
 
 export class TokenRefreshResponse extends ApiResponse {
-  constructor(message: string, private accessToken: string, private refreshToken: string) {
+  constructor(
+    message: string,
+    private accessToken: string,
+    private refreshToken: string,
+  ) {
     super(StatusCode.SUCCESS, ResponseStatus.SUCCESS, message);
   }
 

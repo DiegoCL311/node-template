@@ -1,6 +1,7 @@
-import * as usuarioRepository from "../repositories/usuarioRepository";
-import { IUsuario, IDataUsuario } from "../models/usuario";
-import { BadRequestError, NotFoundError } from "../core/ApiError";
+import { ERROR_MESSAGES } from '../constants';
+import { BadRequestError, NotFoundError } from '../core/ApiError';
+import { IUsuario, IDataUsuario } from '../models/usuario';
+import * as usuarioRepository from '../repositories/usuarioRepository';
 
 /**
  * Lógica de negocio para obtener todos los usuarios.
@@ -14,7 +15,7 @@ export const fetchAllUsers = async (): Promise<IUsuario[]> => {
  */
 export const fetchUserByPk = async (id: number): Promise<IUsuario> => {
   const user = await usuarioRepository.obtenerUsuarioByPk(id);
-  if (!user) throw new NotFoundError("Usuario no encontrado");
+  if (!user) throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
   return user;
 };
 
@@ -23,7 +24,7 @@ export const fetchUserByPk = async (id: number): Promise<IUsuario> => {
  */
 export const registerNewUser = async (data: IDataUsuario): Promise<IUsuario> => {
   const existing = await usuarioRepository.obtenerUsuarioFullByUsuario(data.cUsuario);
-  if (existing) throw new BadRequestError("El nombre de usuario ya está registrado");
+  if (existing) throw new BadRequestError(ERROR_MESSAGES.USERNAME_ALREADY_REGISTERED);
 
   return await usuarioRepository.crearUsuario(data);
 };
@@ -33,7 +34,7 @@ export const registerNewUser = async (data: IDataUsuario): Promise<IUsuario> => 
  */
 export const modifyUser = async (id: number, data: Partial<IDataUsuario>): Promise<IUsuario> => {
   const user = await usuarioRepository.obtenerUsuarioByPk(id);
-  if (!user) throw new NotFoundError("Usuario no encontrado");
+  if (!user) throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
 
   return await usuarioRepository.actualizarUsuario(id, data);
 };
@@ -43,7 +44,7 @@ export const modifyUser = async (id: number, data: Partial<IDataUsuario>): Promi
  */
 export const removeUser = async (id: number): Promise<void> => {
   const user = await usuarioRepository.obtenerUsuarioByPk(id);
-  if (!user) throw new NotFoundError("Usuario no encontrado");
+  if (!user) throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
 
   await usuarioRepository.eliminarUsuario(id);
 };

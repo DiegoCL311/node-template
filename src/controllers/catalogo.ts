@@ -1,12 +1,14 @@
-import { Router, Request, Response } from "express";
-import asyncErrorHandler from "../utils/asyncErrorHandler";
-import { validateRequest } from "../middlewares/validateRequest";
-import { catalogoSchema } from "../models/catalogo";
-import { catalogoValorSchema } from "../models/catalogoValor";
-import * as catalogoService from "../services/catalogoService";
-import * as catalogoValorService from "../services/catalogoValorService";
-import { SuccessResponse, NoContentResponse, SuccessMsgResponse } from "../core/ApiResponse";
-import { BadRequestError } from "../core/ApiError";
+import { Router, Request, Response } from 'express';
+
+import { ERROR_MESSAGES } from '../constants';
+import { BadRequestError } from '../core/ApiError';
+import { SuccessResponse, NoContentResponse } from '../core/ApiResponse';
+import { validateRequest } from '../middlewares/validateRequest';
+import { catalogoSchema } from '../models/catalogo';
+import { catalogoValorSchema } from '../models/catalogoValor';
+import * as catalogoService from '../services/catalogoService';
+import * as catalogoValorService from '../services/catalogoValorService';
+import asyncErrorHandler from '../utils/asyncErrorHandler';
 
 const app = Router();
 
@@ -22,19 +24,22 @@ const app = Router();
  *         required: true
  *         schema:
  *           type: string
- *           description: Claves separadas por coma (Ej. ROL,ESTATUS)
+ *         description: Claves separadas por coma (Ej. ROL,ESTATUS)
  */
-app.get("/multi", asyncErrorHandler(async (req: Request, res: Response) => {
+app.get(
+  '/multi',
+  asyncErrorHandler(async (req: Request, res: Response) => {
     const { claves } = req.query;
     if (!claves || typeof claves !== 'string') {
-        throw new BadRequestError("Se requiere el parámetro 'claves' separado por comas.");
+      throw new BadRequestError(ERROR_MESSAGES.CLAVES_REQUIRED);
     }
 
-    const clavesArray = claves.split(',').map(c => c.trim());
+    const clavesArray = claves.split(',').map((c) => c.trim());
     const listMulti = await catalogoValorService.getMultipleValoresByClaves(clavesArray);
-    
-    new SuccessResponse("Catalogos múltiples obtenidos", listMulti).send(res);
-}));
+
+    new SuccessResponse('Catalogos múltiples obtenidos', listMulti).send(res);
+  }),
+);
 
 /**
  * @openapi
@@ -43,10 +48,13 @@ app.get("/multi", asyncErrorHandler(async (req: Request, res: Response) => {
  *     summary: Obtener todos los catálogos
  *     tags: [Catalogos]
  */
-app.get("/", asyncErrorHandler(async (req: Request, res: Response) => {
+app.get(
+  '/',
+  asyncErrorHandler(async (req: Request, res: Response) => {
     const list = await catalogoService.getAllCatalogos();
-    new SuccessResponse("Catalogos obtenidos", list).send(res);
-}));
+    new SuccessResponse('Catalogos obtenidos', list).send(res);
+  }),
+);
 
 /**
  * @openapi
@@ -55,10 +63,14 @@ app.get("/", asyncErrorHandler(async (req: Request, res: Response) => {
  *     summary: Crear un catálogo
  *     tags: [Catalogos]
  */
-app.post("/", validateRequest(catalogoSchema), asyncErrorHandler(async (req: Request, res: Response) => {
+app.post(
+  '/',
+  validateRequest(catalogoSchema),
+  asyncErrorHandler(async (req: Request, res: Response) => {
     const model = await catalogoService.createCatalogo(req.body);
-    new SuccessResponse("Catalogo creado", model).send(res);
-}));
+    new SuccessResponse('Catalogo creado', model).send(res);
+  }),
+);
 
 /**
  * @openapi
@@ -67,10 +79,14 @@ app.post("/", validateRequest(catalogoSchema), asyncErrorHandler(async (req: Req
  *     summary: Actualizar un catálogo
  *     tags: [Catalogos]
  */
-app.put("/:id", validateRequest(catalogoSchema.partial()), asyncErrorHandler(async (req: Request, res: Response) => {
+app.put(
+  '/:id',
+  validateRequest(catalogoSchema.partial()),
+  asyncErrorHandler(async (req: Request, res: Response) => {
     const model = await catalogoService.updateCatalogo(Number(req.params.id), req.body);
-    new SuccessResponse("Catalogo actualizado", model).send(res);
-}));
+    new SuccessResponse('Catalogo actualizado', model).send(res);
+  }),
+);
 
 /**
  * @openapi
@@ -79,10 +95,13 @@ app.put("/:id", validateRequest(catalogoSchema.partial()), asyncErrorHandler(asy
  *     summary: Eliminar un catálogo
  *     tags: [Catalogos]
  */
-app.delete("/:id", asyncErrorHandler(async (req: Request, res: Response) => {
+app.delete(
+  '/:id',
+  asyncErrorHandler(async (req: Request, res: Response) => {
     await catalogoService.deleteCatalogo(Number(req.params.id));
-    new NoContentResponse("Catalogo eliminado").send(res);
-}));
+    new NoContentResponse('Catalogo eliminado').send(res);
+  }),
+);
 
 // --- VALORES ---
 
@@ -93,10 +112,13 @@ app.delete("/:id", asyncErrorHandler(async (req: Request, res: Response) => {
  *     summary: Obtener valores por ID de catálogo
  *     tags: [Catalogos]
  */
-app.get("/valores/:idCatalogo", asyncErrorHandler(async (req: Request, res: Response) => {
+app.get(
+  '/valores/:idCatalogo',
+  asyncErrorHandler(async (req: Request, res: Response) => {
     const list = await catalogoValorService.getValoresByCatalogoId(Number(req.params.idCatalogo));
-    new SuccessResponse("Valores obtenidos", list).send(res);
-}));
+    new SuccessResponse('Valores obtenidos', list).send(res);
+  }),
+);
 
 /**
  * @openapi
@@ -105,10 +127,17 @@ app.get("/valores/:idCatalogo", asyncErrorHandler(async (req: Request, res: Resp
  *     summary: Obtener valores por clave de catálogo
  *     tags: [Catalogos]
  */
-app.get("/valores/clave/:clave", asyncErrorHandler(async (req: Request, res: Response) => {
-    const list = await catalogoValorService.getValoresByCatalogoClave(req.params.clave as any);
-    new SuccessResponse("Valores obtenidos para la clave " + req.params.clave, list).send(res);
-}));
+app.get(
+  '/valores/clave/:clave',
+  asyncErrorHandler(async (req: Request, res: Response) => {
+    const { clave } = req.params;
+    if (!clave) {
+      throw new BadRequestError(ERROR_MESSAGES.CLAVES_REQUIRED);
+    }
+    const list = await catalogoValorService.getValoresByCatalogoClave(clave);
+    new SuccessResponse(`Valores obtenidos para la clave ${clave}`, list).send(res);
+  }),
+);
 
 /**
  * @openapi
@@ -117,10 +146,14 @@ app.get("/valores/clave/:clave", asyncErrorHandler(async (req: Request, res: Res
  *     summary: Crear un valor de catálogo
  *     tags: [Catalogos]
  */
-app.post("/valores", validateRequest(catalogoValorSchema), asyncErrorHandler(async (req: Request, res: Response) => {
+app.post(
+  '/valores',
+  validateRequest(catalogoValorSchema),
+  asyncErrorHandler(async (req: Request, res: Response) => {
     const model = await catalogoValorService.createValor(req.body);
-    new SuccessResponse("Valor creado", model).send(res);
-}));
+    new SuccessResponse('Valor creado', model).send(res);
+  }),
+);
 
 /**
  * @openapi
@@ -129,10 +162,14 @@ app.post("/valores", validateRequest(catalogoValorSchema), asyncErrorHandler(asy
  *     summary: Actualizar un valor de catálogo
  *     tags: [Catalogos]
  */
-app.put("/valores/:id", validateRequest(catalogoValorSchema.partial()), asyncErrorHandler(async (req: Request, res: Response) => {
+app.put(
+  '/valores/:id',
+  validateRequest(catalogoValorSchema.partial()),
+  asyncErrorHandler(async (req: Request, res: Response) => {
     const model = await catalogoValorService.updateValor(Number(req.params.id), req.body);
-    new SuccessResponse("Valor actualizado", model).send(res);
-}));
+    new SuccessResponse('Valor actualizado', model).send(res);
+  }),
+);
 
 /**
  * @openapi
@@ -141,9 +178,12 @@ app.put("/valores/:id", validateRequest(catalogoValorSchema.partial()), asyncErr
  *     summary: Eliminar un valor de catálogo
  *     tags: [Catalogos]
  */
-app.delete("/valores/:id", asyncErrorHandler(async (req: Request, res: Response) => {
+app.delete(
+  '/valores/:id',
+  asyncErrorHandler(async (req: Request, res: Response) => {
     await catalogoValorService.deleteValor(Number(req.params.id));
-    new NoContentResponse("Valor eliminado").send(res);
-}));
+    new NoContentResponse('Valor eliminado').send(res);
+  }),
+);
 
 export default app;

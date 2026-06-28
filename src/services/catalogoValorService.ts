@@ -1,6 +1,7 @@
-import * as catalogoValorRepository from '../repositories/catalogoValorRepository';
-import { ICatalogoValor } from '../models/catalogoValor';
+import { ERROR_MESSAGES } from '../constants';
 import { NotFoundError } from '../core/ApiError';
+import { ICatalogoValor, ICatalogoValorInput } from '../models/catalogoValor';
+import * as catalogoValorRepository from '../repositories/catalogoValorRepository';
 
 /**
  * Lógica de negocio para obtener todos los valores.
@@ -19,16 +20,19 @@ export const getValoresByCatalogoClave = async (clave: string): Promise<ICatalog
 /**
  * Lógica de negocio para crear un valor.
  */
-export const createValor = async (data: ICatalogoValor): Promise<ICatalogoValor> => {
+export const createValor = async (data: ICatalogoValorInput): Promise<ICatalogoValor> => {
   return await catalogoValorRepository.crearRepoValor(data);
 };
 
 /**
  * Lógica de negocio para actualizar un valor.
  */
-export const updateValor = async (id: number, data: Partial<ICatalogoValor>): Promise<ICatalogoValor> => {
+export const updateValor = async (
+  id: number,
+  data: Partial<ICatalogoValorInput>,
+): Promise<ICatalogoValor> => {
   const model = await catalogoValorRepository.obtenerRepoValorById(id);
-  if (!model) throw new NotFoundError('Valor no encontrado');
+  if (!model) throw new NotFoundError(ERROR_MESSAGES.CATALOGO_VALOR_NOT_FOUND);
 
   return await catalogoValorRepository.actualizarRepoValor(id, data);
 };
@@ -38,7 +42,7 @@ export const updateValor = async (id: number, data: Partial<ICatalogoValor>): Pr
  */
 export const deleteValor = async (id: number): Promise<void> => {
   const model = await catalogoValorRepository.obtenerRepoValorById(id);
-  if (!model) throw new NotFoundError('Valor no encontrado');
+  if (!model) throw new NotFoundError(ERROR_MESSAGES.CATALOGO_VALOR_NOT_FOUND);
 
   await catalogoValorRepository.eliminarRepoValor(id);
 };
@@ -47,6 +51,8 @@ export const deleteValor = async (id: number): Promise<void> => {
  * Regresa un arreglo de arreglos en el mismo orden que las claves recibidas.
  */
 export const getMultipleValoresByClaves = async (claves: string[]): Promise<ICatalogoValor[][]> => {
-  const promises = claves.map(clave => catalogoValorRepository.obtenerValoresPorCatalogoClave(clave));
+  const promises = claves.map((clave) =>
+    catalogoValorRepository.obtenerValoresPorCatalogoClave(clave),
+  );
   return await Promise.all(promises);
 };

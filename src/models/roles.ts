@@ -1,71 +1,45 @@
-import {
-  Table,
-  Column,
-  Model,
-  DataType,
-  PrimaryKey,
-  AutoIncrement,
-  AllowNull,
-  CreatedAt,
-  UpdatedAt,
-} from 'sequelize-typescript';
 import { z } from 'zod';
 
-// 1. TYPESCRIPT INTERFACES
+/**
+ * Modelo público de Rol (tipos y schemas Zod).
+ *
+ * Este archivo SOLO expone tipos y schemas. La clase Sequelize vive en
+ * `src/database/models/roles.ts`.
+ *
+ * Patrón de tipos:
+ *   - `IRolInput` → entrada para crear/actualizar (derivado de Zod).
+ *   - `IRol`       → salida pública (derivado de Zod, lo que retorna `toObj()`).
+ *   - `IRolFull`   → fila cruda de BD con timestamps (no derivable de Zod).
+ */
 
-export interface IRol {
-  nRol: number;
-  cRol: string;
-}
-
-// 2. z SCHEMA IRol
+//
+// 1. INPUT SHAPE — fuente de verdad para creación/actualización
+//
 export const rolSchema = z.object({
   nRol: z.number().min(1),
   cRol: z.string().min(3).max(20),
 });
 
+/** Tipo derivado del schema de entrada. */
+export type IRolInput = z.infer<typeof rolSchema>;
+
 //
-// 3. SEQUELIZE MODEL WITH DECORATORS
+// 2. PUBLIC OUTPUT SHAPE — lo que se expone a clientes
 //
-@Table({
-  tableName: 'roles',
-  timestamps: true,
-})
-export class Rol extends Model<IRol, Omit<IRol, 'nRol'>> implements IRol {
-  @PrimaryKey
-  @AutoIncrement
-  @Column({
-    type: DataType.INTEGER.UNSIGNED,
-  })
-  declare nRol: number;
+export const rolPublicSchema = z.object({
+  nRol: z.number(),
+  cRol: z.string(),
+});
 
-  @AllowNull(false)
-  @Column({
-    type: DataType.STRING(20),
-  })
-  declare cRol: string;
+/** Tipo derivado del schema público. */
+export type IRol = z.infer<typeof rolPublicSchema>;
 
-  @CreatedAt
-  declare createdAt: Date;
-
-  @UpdatedAt
-  declare updatedAt: Date;
-
-  /**
-   * Regresa un objeto IRol sin timestamps
-   */
-  public toObj(): IRol {
-    const { nRol, cRol } = this.get({ plain: true });
-    return { nRol, cRol };
-  }
-
-  /**
-   * Regresa un objeto IRol con todos los datos
-   */
-  public toObjFull(): IRol {
-    return this.get({ plain: true }) as IRol;
-  }
+//
+// 3. FULL ROW — fila cruda de la base de datos
+//
+export interface IRolFull {
+  nRol: number;
+  cRol: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
-
-export default Rol;
-

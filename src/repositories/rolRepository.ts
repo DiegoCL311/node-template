@@ -1,64 +1,67 @@
-import RolService, { IRol } from '../models/roles';
 import { NoEntryError } from '../core/ApiError';
+import Rol from '../database/models/roles';
+import { type IRol, type IRolFull, type IRolInput } from '../models/roles';
 
 /**
  * Busca un Rol por su clave primaria.
  * @param {number} nRol – ID del Rol.
- * @returns {IRol | null} – Rol o null.
+ * @returns {Readonly<IRol> | null} – Rol inmutable o null.
  */
-export const obtenerRolByPk = async (nRol: number): Promise<IRol | null> => {
-    const rol = await RolService.findByPk(nRol);
-    return rol ? rol.toObj() : null;
+export const obtenerRolByPk = async (nRol: number): Promise<Readonly<IRol> | null> => {
+  const rol = await Rol.findByPk(nRol);
+  return rol ? rol.toObj() : null;
 };
 
 /**
- * Obtiene registro completo de un Rol.
+ * Obtiene registro completo de un Rol (incluye timestamps).
  * @param {number} id – ID del Rol a buscar.
- * @returns {IRol | null} – Rol completo (incluye  timestamps).
+ * @returns {Readonly<IRolFull> | null} – Rol completo inmutable o null.
  */
-export const obtenerRolFullById = async (id: number): Promise<IRol | null> => {
-    const Rol = await RolService.findByPk(id);
-
-    return Rol ? Rol.toObjFull() : null;
+export const obtenerRolFullById = async (id: number): Promise<Readonly<IRolFull> | null> => {
+  const rol = await Rol.scope('full').findByPk(id);
+  return rol ? rol.toObjFull() : null;
 };
 
 /**
  * Crea un nuevo Rol.
- * @param {IRolInsert} Rol – Datos para crear el Rol.
- * @returns {IRol} – Campos públicos del Rol creado.
+ * @param {IRolInput} Rol – Datos para crear el Rol.
+ * @returns {Readonly<IRol>} – Rol público inmutable.
  */
-export const crearRol = async (Rol: IRol): Promise<IRol> => {
-    const RolInsertado = await RolService.create(Rol);
-    return RolInsertado.toObj();
+export const crearRol = async (rol: IRolInput): Promise<Readonly<IRol>> => {
+  const rolInsertado = await Rol.create(rol);
+  return rolInsertado.toObj();
 };
 
 /**
  * Actualiza campos de un Rol existente.
- * @param {IRolUpdate} Rol – nRol y campos opcionales a modificar.
- * @returns {IRol} – Rol público actualizado.
+ * @param {number} nRol – ID del Rol a actualizar.
+ * @param {Partial<IRolInput>} rol – Campos opcionales a modificar.
+ * @returns {Readonly<IRol>} – Rol público actualizado e inmutable.
  * @throws {NoEntryError} – Si no se encuentra el Rol.
  */
-export const actualizarRol = async (nRol: number, Rol: Partial<IRol>): Promise<IRol> => {
-    const instancia = await RolService.findByPk(nRol);
-    if (!instancia) throw new NoEntryError('Rol no encontrado');
-    await instancia.update(Rol);
-    return instancia.toObj();
+export const actualizarRol = async (
+  nRol: number,
+  rol: Partial<IRolInput>,
+): Promise<Readonly<IRol>> => {
+  const instancia = await Rol.findByPk(nRol);
+  if (!instancia) throw new NoEntryError('Rol no encontrado');
+  await instancia.update(rol);
+  return instancia.toObj();
 };
 
 /**
  * Elimina un Rol.
  */
 export const eliminarRol = async (nRol: number): Promise<void> => {
-    const instancia = await RolService.findByPk(nRol);
-    if (!instancia) throw new NoEntryError('Rol no encontrado');
-    await instancia.destroy();
+  const instancia = await Rol.findByPk(nRol);
+  if (!instancia) throw new NoEntryError('Rol no encontrado');
+  await instancia.destroy();
 };
 
 /**
  * Obtiene todos los Roles.
  */
-export const obtenerTodosLosRoles = async (): Promise<IRol[]> => {
-    const roles = await RolService.findAll();
-    return roles.map(r => r.toObj());
+export const obtenerTodosLosRoles = async (): Promise<Readonly<IRol>[]> => {
+  const roles = await Rol.findAll();
+  return roles.map((r) => r.toObj());
 };
-

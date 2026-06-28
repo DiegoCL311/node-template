@@ -1,5 +1,6 @@
-import mysql, { PoolConnection, RowDataPacket } from "mysql2/promise";
-import config from "../config";
+import mysql, { PoolConnection, RowDataPacket } from 'mysql2/promise';
+
+import config from '../config';
 
 let mysqlConnectionPool: mysql.Pool;
 
@@ -15,10 +16,8 @@ const mysqlLoader = async () => {
     port: Number(config.database.port),
   });
 
-
-  console.log("MySQL connected");
+  console.log('MySQL connected');
 };
-
 
 async function getConnection(): Promise<PoolConnection> {
   return await mysqlConnectionPool.getConnection();
@@ -70,7 +69,9 @@ async function execQuery<T = unknown>(query: string, params?: any[]): Promise<T>
   }
 }
 
-async function execQueryWithCallback<T = unknown>(callback = (conn: PoolConnection) => { }): Promise<T> {
+async function execQueryWithCallback<T = unknown>(
+  callback = (_conn: PoolConnection) => {},
+): Promise<T> {
   const conn: PoolConnection = await getConnection();
   try {
     // Iniciar transacción
@@ -93,4 +94,12 @@ async function execQueryWithCallback<T = unknown>(callback = (conn: PoolConnecti
   }
 }
 
-export { mysqlLoader, mysqlConnectionPool, execQuery, execQueryWithCallback, execTransaction, getData, getConnection };
+export {
+  mysqlLoader,
+  mysqlConnectionPool,
+  execQuery,
+  execQueryWithCallback,
+  execTransaction,
+  getData,
+  getConnection,
+};

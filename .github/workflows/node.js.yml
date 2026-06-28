@@ -27,10 +27,16 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
 
       - name: Build
         run: npm run build
@@ -68,7 +74,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
@@ -96,3 +102,14 @@ jobs:
           MYSQL_PORT: 3307
           NODE_ENV: test
         run: npm test
+
+      - name: Coverage
+        env:
+          MYSQL_DATABASE: test
+          MYSQL_USER: root
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_PASSWORD: rootpassword
+          MYSQL_URL: mysql://root:rootpassword@127.0.0.1:3307/test
+          MYSQL_PORT: 3307
+          NODE_ENV: test
+        run: npm run test:coverage
