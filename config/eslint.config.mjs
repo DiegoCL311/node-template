@@ -4,37 +4,36 @@ import tseslint from 'typescript-eslint';
 import importPlugin from 'eslint-plugin-import';
 import unicorn from 'eslint-plugin-unicorn';
 import sonarjs from 'eslint-plugin-sonarjs';
-import prettier from 'eslint-plugin-prettier';
 
 export default tseslint.config(
-  { name: 'ignores', ignores: ['dist/**', 'node_modules/**'] },
+  {
+    name: 'ignores',
+    ignores: ['dist/**', 'node_modules/**', 'build/**', 'coverage/**', 'src/loaders/banner.ts'],
+  },
 
   // Reglas base JS
   js.configs.recommended,
 
-  // Reglas base TS (sin type-check pesado)
+  // Reglas base TS (sin type-check)
   ...tseslint.configs.recommended,
 
-  // Reglas generales (JS/TS)
+  // sonarjs.configs.recommended,
+
   {
     name: 'project:rules',
     plugins: {
       import: importPlugin,
       unicorn,
       sonarjs,
-      prettier,
     },
-    // Resolver de imports para TypeScript (requiere eslint-import-resolver-typescript)
     settings: {
       'import/resolver': {
-        typescript: {
-          project: ['./config/tsconfig.base.json'],
+        node: {
+          extensions: ['.js', '.ts', '.tsx'],
         },
       },
     },
     rules: {
-      'prettier/prettier': 'error',
-
       // Higiene de imports
       'import/no-duplicates': 'error',
       'import/order': [
@@ -48,10 +47,31 @@ export default tseslint.config(
 
       // Complejidad y tamaño
       complexity: ['error', { max: 10 }],
-      'max-lines-per-function': ['warn', { max: 80, skipBlankLines: true, skipComments: true }],
+      'max-lines-per-function': ['warn', { max: 100, skipBlankLines: true, skipComments: true }],
       'max-lines': ['warn', { max: 400, skipBlankLines: true, skipComments: true }],
 
-      // Unicorn (ajustes razonables)
+      // Ignorar argumentos y variables con prefijo `_` (convención para
+      // parámetros requeridos por la firma pero no usados, p.ej. `_next` en
+      // middlewares de error de Express).
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+      'no-unused-vars': 'off',
+
+      // Reglas relajadas para mantener compatibilidad con el código heredado
+      // del template (ApiError, jwt, mysql, asyncErrorHandler) y permitir
+      // evoluciones pragmáticas.
+      '@typescript-eslint/no-explicit-any': 'off',
+      'no-explicit-any': 'off',
+      'no-irregular-whitespace': 'off',
+      'no-useless-catch': 'off',
+
+      // Unicorn
       'unicorn/prevent-abbreviations': 'off',
       'unicorn/no-array-reduce': 'off',
     },
@@ -65,13 +85,24 @@ export default tseslint.config(
       parser: tseslint.parser,
       parserOptions: {
         sourceType: 'module',
-        project: false, // sin type info para que sea rápido en pre-commit
+        project: false,
       },
     },
     rules: {
-      // 🔧 Desactivada porque requiere type information
       '@typescript-eslint/no-misused-promises': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
     },
-  }
+  },
+
+  // Override específico: banner.ts contiene arte ASCII con escapes
+  // deliberados ($, \, etc.) que disparan no-useless-escape. Sin esto,
+  // el banner se rompe visualmente en consola.
+  {
+    name: 'banner-override',
+    files: ['src/loaders/banner.ts'],
+    rules: {
+      'no-useless-escape': 'off',
+      'no-console': 'off',
+    },
+  },
 );

@@ -1,0 +1,9 @@
+{
+  "cUsuario": "admin",
+  "cPasswordPlain": "admin123",
+  "cNombres": "Admin",
+  "cApellidos": "System",
+  "nRol": 1,
+  "nEstatus": 1,
+  "bSeedPassword": true
+}
